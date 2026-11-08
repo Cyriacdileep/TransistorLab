@@ -53,6 +53,13 @@ body.dark-theme {
   font-size: 1.4rem;
 }
 
+.nav-brand .nav-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 .nav-brand .title {
   font-weight: 700;
   font-size: 1.25rem;
