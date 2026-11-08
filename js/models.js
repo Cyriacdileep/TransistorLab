@@ -14,7 +14,11 @@
  *
  * Usage in the browser:
  *   <script type="module">
- *     import { bjtSwitch, gate, add4, ceAmp, neuron, lif } from './models.js';
+ *     import { bjtSwitch, gate, add4, ceAmp, neuron, lif } from './js/models.js';
+ *     // or import by domain modules:
+ *     import { Digital, Analog, Neural } from './js/models.js';
+ *     // or import from the barrel entry point:
+ *     import * as TransistorLab from './js/index.js';
  *   </script>
  *
  * Units: volts, amps, ohms, farads, seconds, hertz.
@@ -308,3 +312,52 @@ function checkNibble(v, name) {
 function toBinary(n) {
   return n.toString(2).padStart(4, '0');
 }
+
+// ---------------------------------------------------------------
+// Domain module grouped exports
+// ---------------------------------------------------------------
+export const Digital = {
+  SWITCH,
+  bjtSwitch,
+  saturationVin,
+  bjtTransfer,
+  gate,
+  fullAdder,
+  add4
+};
+
+export const Analog = {
+  AMP,
+  ceBias,
+  ceAmp
+};
+
+export const Neural = {
+  neuron,
+  ACTIVATIONS,
+  lif,
+  lifPeriod
+};
+
+// ---------------------------------------------------------------
+// Default export consolidating all models and modules
+// ---------------------------------------------------------------
+export default {
+  Digital,
+  Analog,
+  Neural,
+  SWITCH,
+  bjtSwitch,
+  saturationVin,
+  bjtTransfer,
+  gate,
+  fullAdder,
+  add4,
+  AMP,
+  ceBias,
+  ceAmp,
+  neuron,
+  ACTIVATIONS,
+  lif,
+  lifPeriod
+};

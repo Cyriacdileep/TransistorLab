@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TransistorLab: From Silicon to Intelligence</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="alternate icon" href="favicon.ico">
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="alternate icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -14,7 +14,7 @@
   <!-- Header / Navigation -->
   <header class="navbar">
     <div class="nav-brand">
-      <img src="favicon.png" alt="TransistorLab Logo" class="nav-logo">
+      <img src="assets/favicon.png" alt="TransistorLab Logo" class="nav-logo">
       <span class="title">TransistorLab</span>
       <span class="badge">Silicon to Intelligence</span>
     </div>
@@ -172,18 +172,22 @@
         <div class="adder-controls">
           <div class="operand-row">
             <label>Operand A (0–15):</label>
-            <div class="nibble-selector" id="operand-a-bits">
-              <!-- 4 bit buttons -->
+            <div class="nibble-group">
+              <div class="nibble-selector" id="operand-a-bits">
+                <!-- 4 bit buttons -->
+              </div>
+              <span class="decimal-badge" id="operand-a-dec">= 0</span>
             </div>
-            <span class="decimal-badge" id="operand-a-dec">= 0</span>
           </div>
 
           <div class="operand-row">
             <label>Operand B (0–15):</label>
-            <div class="nibble-selector" id="operand-b-bits">
-              <!-- 4 bit buttons -->
+            <div class="nibble-group">
+              <div class="nibble-selector" id="operand-b-bits">
+                <!-- 4 bit buttons -->
+              </div>
+              <span class="decimal-badge" id="operand-b-dec">= 0</span>
             </div>
-            <span class="decimal-badge" id="operand-b-dec">= 0</span>
           </div>
         </div>
 
@@ -199,7 +203,9 @@
             <span id="adder-calc-text">A (0) + B (0) = 0</span>
           </div>
           <div class="total-binary">
-            Carry Out: <span class="badge-carry" id="adder-cout">0</span> | Sum [3:0]: <span class="badge-sum" id="adder-sum-bin">0000</span> (Decimal: <strong id="adder-total-dec">0</strong>)
+            <span class="total-chip">Carry Out: <strong class="badge-carry" id="adder-cout">0</strong></span>
+            <span class="total-chip">Sum [3:0]: <strong class="badge-sum" id="adder-sum-bin">0000</strong></span>
+            <span class="total-chip">Decimal: <strong id="adder-total-dec">0</strong></span>
           </div>
         </div>
       </div>
@@ -377,6 +383,9 @@
       </div>
 
       <div class="card">
+        <div class="table-scroll-hint">
+          <span>⇄ Swipe or scroll horizontally to inspect benchmark data</span>
+        </div>
         <div class="table-responsive">
           <table class="validation-table">
           <thead>
@@ -429,6 +438,6 @@
     <p>TransistorLab: From Silicon to Intelligence • Built by the Engineering Sprint Team</p>
   </footer>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

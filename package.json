@@ -1,0 +1,25 @@
+{
+  "name": "transistorlab",
+  "version": "1.0.0",
+  "description": "TransistorLab: From Silicon to Intelligence - Interactive educational simulator",
+  "type": "module",
+  "main": "./js/index.js",
+  "exports": {
+    ".": "./js/index.js",
+    "./models": "./js/models.js",
+    "./app": "./js/app.js",
+    "./css": "./css/style.css"
+  },
+  "keywords": [
+    "transistor",
+    "electronics",
+    "simulation",
+    "bjt",
+    "digital-logic",
+    "analog",
+    "neural-networks",
+    "lif-neuron"
+  ],
+  "author": "Engineering Sprint Team",
+  "license": "MIT"
+}

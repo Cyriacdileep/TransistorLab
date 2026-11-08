@@ -48,14 +48,22 @@ let lifChartInstance = null;
 /* ============================================================
  * Initialization
  * ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+}
+
+function initApp() {
   initBJTModule();
   initGateModule();
   initAdderModule();
   initAmpModule();
   initNeuronModule();
   initLIFModule();
-});
+}
 
 /* ============================================================
  * Module 1.1: BJT Inverter
@@ -488,3 +496,19 @@ function initLIFModule() {
   modeSelect.addEventListener('change', updateLIF);
   updateLIF();
 }
+
+/* ============================================================
+ * Module Exports
+ * ============================================================ */
+export {
+  state,
+  bjtChartInstance,
+  ceChartInstance,
+  lifChartInstance,
+  initBJTModule,
+  initGateModule,
+  initAdderModule,
+  initAmpModule,
+  initNeuronModule,
+  initLIFModule
+};

@@ -30,6 +30,29 @@ Modern computing architectures originate from the precise manipulation of solid-
 
 ---
 
+## 📂 Project Structure
+
+```
+ANALOG/
+├── index.html           # Main application entry point & semantic markup
+├── css/
+│   └── style.css        # Responsive styling, design tokens & breakpoint system
+├── js/
+│   ├── index.js         # JavaScript package barrel entry point
+│   ├── app.js           # UI controller & interactive DOM/Chart logic
+│   └── models.js        # Semiconductor, gate, amplifier & neural math models
+├── assets/
+│   ├── favicon.ico      # Site favicon
+│   └── favicon.png      # Application branding logo
+├── docs/
+│   └── TransistorLab_Final_Project_Report.pdf # Comprehensive project report
+├── package.json         # Module definition & modern subpath exports mapping
+├── .gitignore           # Git ignore configuration
+└── README.md            # Architecture, models & project documentation
+```
+
+---
+
 ## 💻 Tech Stack
 
 * **Frontend:** Semantic HTML5, CSS Grid & Modern Dark Theme, Vanilla JavaScript (ES6+ Native Modules).
