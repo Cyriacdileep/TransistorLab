@@ -898,7 +898,7 @@ input[type="range"]::-moz-range-thumb {
  * ============================================================ */
 .readout-box {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1px;
   background-color: var(--border-rule);
   border-top: 1px solid var(--border-rule);
@@ -906,27 +906,50 @@ input[type="range"]::-moz-range-thumb {
 
 .readout-item {
   background-color: var(--bg-surface);
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 0.85rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 40px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-height: 52px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .readout-item .label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   color: var(--text-dim);
+  line-height: 1.3;
+  margin-bottom: 0.1rem;
+}
+
+.readout-item .label sub {
+  font-size: 0.78em;
+  vertical-align: -0.15em;
+  line-height: 0;
+  text-transform: lowercase;
 }
 
 .readout-item .val {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-main);
-  text-align: right;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.readout-item .status-badge {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ============================================================
@@ -1602,6 +1625,9 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-dim);
   font-style: italic;
   line-height: 1.5;
+  text-align: center;
+  max-width: none;
+  margin: 0.5rem auto 0;
 }
 
 /* ============================================================
@@ -1698,6 +1724,12 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.82rem;
   color: var(--text-dim);
   font-family: var(--font-mono);
+}
+
+.footer p {
+  max-width: none;
+  margin: 0 auto;
+  text-align: center;
 }
 
 /* ============================================================
