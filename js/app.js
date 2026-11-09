@@ -55,30 +55,20 @@ let ceChartInstance = null;
 let ceInputChartInstance = null;
 let lifChartInstance = null;
 let neuronChartInstance = null;
+let renderGateGlobal = null;
 
 /* Configure global chart defaults for oscilloscope instrument aesthetic */
 if (typeof Chart !== 'undefined') {
-  Chart.defaults.color = '#94a3b8';
-  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+  Chart.defaults.color = '#475569';
+  Chart.defaults.font.family = "'Ubuntu Mono', 'IBM Plex Mono', monospace";
   Chart.defaults.font.size = 11;
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(9, 14, 23, 0.95)';
-  Chart.defaults.plugins.tooltip.titleColor = '#f1f5f9';
-  Chart.defaults.plugins.tooltip.bodyColor = '#94a3b8';
-  Chart.defaults.plugins.tooltip.borderColor = '#1e293b';
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+  Chart.defaults.plugins.tooltip.titleColor = '#f8fafc';
+  Chart.defaults.plugins.tooltip.bodyColor = '#cbd5e1';
+  Chart.defaults.plugins.tooltip.borderColor = '#cbd5e1';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 8;
   Chart.defaults.plugins.tooltip.cornerRadius = 4;
-}
-
-/* ============================================================
- * Initialization
- * ============================================================ */
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-  } else {
-    initApp();
-  }
 }
 
 function initApp() {
@@ -95,15 +85,137 @@ function initApp() {
 /* ============================================================
  * Theme Toggle & Navigation Scrollspy
  * ============================================================ */
+
+function getThemeColors() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    isDark,
+    gridColor: isDark ? '#1e293b' : 'rgba(203, 213, 225, 0.7)',
+    tickColor: isDark ? '#94a3b8' : '#475569',
+    axisTitleColor: isDark ? '#94a3b8' : '#334155',
+    legendColor: isDark ? '#f1f5f9' : '#0f172a',
+    ch1Color: isDark ? '#38bdf8' : '#0284c7', // Sky Blue
+    ch2Color: isDark ? '#60a5fa' : '#2563eb', // Royal Blue
+    ch1Fill: isDark ? 'rgba(56, 189, 248, 0.10)' : 'rgba(2, 132, 199, 0.08)',
+    ch2Fill: isDark ? 'rgba(96, 165, 250, 0.08)' : 'rgba(37, 99, 235, 0.08)',
+    refColor: '#94a3b8',
+    opPointBg: isDark ? '#38bdf8' : '#1d4ed8',
+    opPointBorder: '#ffffff'
+  };
+}
+
+function updateChartsForTheme(theme) {
+  const tc = getThemeColors();
+
+  if (bjtChartInstance) {
+    bjtChartInstance.data.datasets[0].borderColor = tc.ch2Color;
+    bjtChartInstance.data.datasets[1].backgroundColor = tc.opPointBg;
+    bjtChartInstance.data.datasets[1].borderColor = tc.opPointBorder;
+    if (bjtChartInstance.options.scales?.x) {
+      bjtChartInstance.options.scales.x.grid.color = tc.gridColor;
+      bjtChartInstance.options.scales.x.ticks.color = tc.tickColor;
+      bjtChartInstance.options.scales.x.title.color = tc.axisTitleColor;
+    }
+    if (bjtChartInstance.options.scales?.y) {
+      bjtChartInstance.options.scales.y.grid.color = tc.gridColor;
+      bjtChartInstance.options.scales.y.ticks.color = tc.tickColor;
+      bjtChartInstance.options.scales.y.title.color = tc.ch2Color;
+    }
+    if (bjtChartInstance.options.plugins?.legend?.labels) {
+      bjtChartInstance.options.plugins.legend.labels.color = tc.legendColor;
+    }
+    bjtChartInstance.update('none');
+  }
+
+  if (ceInputChartInstance) {
+    ceInputChartInstance.data.datasets[0].borderColor = tc.ch1Color;
+    ceInputChartInstance.data.datasets[0].backgroundColor = tc.ch1Fill;
+    if (ceInputChartInstance.options.scales?.x) {
+      ceInputChartInstance.options.scales.x.grid.color = tc.gridColor;
+      ceInputChartInstance.options.scales.x.ticks.color = tc.tickColor;
+    }
+    if (ceInputChartInstance.options.scales?.y) {
+      ceInputChartInstance.options.scales.y.grid.color = tc.gridColor;
+      ceInputChartInstance.options.scales.y.ticks.color = tc.tickColor;
+      ceInputChartInstance.options.scales.y.title.color = tc.ch1Color;
+    }
+    ceInputChartInstance.update('none');
+  }
+
+  if (ceChartInstance) {
+    ceChartInstance.data.datasets[0].borderColor = tc.ch2Color;
+    ceChartInstance.data.datasets[0].backgroundColor = tc.ch2Fill;
+    if (ceChartInstance.options.scales?.x) {
+      ceChartInstance.options.scales.x.grid.color = tc.gridColor;
+      ceChartInstance.options.scales.x.ticks.color = tc.tickColor;
+      ceChartInstance.options.scales.x.title.color = tc.axisTitleColor;
+    }
+    if (ceChartInstance.options.scales?.y) {
+      ceChartInstance.options.scales.y.grid.color = tc.gridColor;
+      ceChartInstance.options.scales.y.ticks.color = tc.tickColor;
+      ceChartInstance.options.scales.y.title.color = tc.ch2Color;
+    }
+    if (ceChartInstance.options.plugins?.legend?.labels) {
+      ceChartInstance.options.plugins.legend.labels.color = tc.legendColor;
+    }
+    ceChartInstance.update('none');
+  }
+
+  if (neuronChartInstance) {
+    neuronChartInstance.data.datasets[0].borderColor = tc.ch2Color;
+    neuronChartInstance.data.datasets[1].backgroundColor = tc.opPointBg;
+    neuronChartInstance.data.datasets[1].borderColor = tc.opPointBorder;
+    if (neuronChartInstance.options.scales?.x) {
+      neuronChartInstance.options.scales.x.grid.color = tc.gridColor;
+      neuronChartInstance.options.scales.x.ticks.color = tc.tickColor;
+      neuronChartInstance.options.scales.x.title.color = tc.axisTitleColor;
+    }
+    if (neuronChartInstance.options.scales?.y) {
+      neuronChartInstance.options.scales.y.grid.color = tc.gridColor;
+      neuronChartInstance.options.scales.y.ticks.color = tc.tickColor;
+      neuronChartInstance.options.scales.y.title.color = tc.ch2Color;
+    }
+    if (neuronChartInstance.options.plugins?.legend?.labels) {
+      neuronChartInstance.options.plugins.legend.labels.color = tc.legendColor;
+    }
+    neuronChartInstance.update('none');
+  }
+
+  if (lifChartInstance) {
+    lifChartInstance.data.datasets[0].borderColor = tc.ch2Color;
+    lifChartInstance.data.datasets[0].backgroundColor = tc.ch2Fill;
+    if (lifChartInstance.data.datasets[2]) {
+      lifChartInstance.data.datasets[2].backgroundColor = tc.ch1Color;
+    }
+    if (lifChartInstance.options.scales?.x) {
+      lifChartInstance.options.scales.x.grid.color = tc.gridColor;
+      lifChartInstance.options.scales.x.ticks.color = tc.tickColor;
+      lifChartInstance.options.scales.x.title.color = tc.axisTitleColor;
+    }
+    if (lifChartInstance.options.scales?.y) {
+      lifChartInstance.options.scales.y.grid.color = tc.gridColor;
+      lifChartInstance.options.scales.y.ticks.color = tc.tickColor;
+      lifChartInstance.options.scales.y.title.color = tc.ch2Color;
+    }
+    if (lifChartInstance.options.plugins?.legend?.labels) {
+      lifChartInstance.options.plugins.legend.labels.color = tc.legendColor;
+    }
+    lifChartInstance.update('none');
+  }
+
+  if (typeof renderGateGlobal === 'function') {
+    renderGateGlobal();
+  }
+}
+
 function initThemeAndNav() {
   const toggleBtn = document.getElementById('theme-toggle');
   const themeIcon = document.getElementById('theme-icon');
   const themeText = document.getElementById('theme-text');
 
-  // Determine initial theme
+  // Default to White & Blue ('light') theme
   const savedTheme = localStorage.getItem('transistorlab-theme');
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+  let currentTheme = savedTheme || 'light';
 
   const applyTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -114,6 +226,7 @@ function initThemeAndNav() {
       if (themeIcon) themeIcon.textContent = '☽';
       if (themeText) themeText.textContent = 'Dark';
     }
+    updateChartsForTheme(theme);
   };
 
   applyTheme(currentTheme);
@@ -123,21 +236,45 @@ function initThemeAndNav() {
       currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('transistorlab-theme', currentTheme);
       applyTheme(currentTheme);
-      // Redraw charts
-      [bjtChartInstance, ceChartInstance, ceInputChartInstance, lifChartInstance, neuronChartInstance].forEach(chart => {
-        if (chart) chart.update('none');
-      });
     });
   }
 
-  // Navigation scrollspy
+  // Navigation scrollspy & smooth click navigation
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('#main-nav a');
+  const allNavAnchors = document.querySelectorAll('#main-nav a, .pathway-step');
+
+  // Smooth click handler with navbar offset
+  allNavAnchors.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href');
+      if (targetId && targetId.startsWith('#')) {
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          const navbar = document.querySelector('.navbar');
+          const navbarHeight = navbar ? navbar.offsetHeight : 60;
+          const targetY = targetEl.getBoundingClientRect().top + window.scrollY - navbarHeight - 12;
+          window.scrollTo({
+            top: Math.max(0, targetY),
+            behavior: 'smooth'
+          });
+          history.pushState(null, '', targetId);
+          navLinks.forEach(l => {
+            l.classList.toggle('active', l.getAttribute('href') === targetId);
+          });
+        }
+      }
+    });
+  });
 
   const onScroll = () => {
-    const scrollPos = window.scrollY + 120;
+    const navbar = document.querySelector('.navbar');
+    const navbarHeight = navbar ? navbar.offsetHeight : 60;
+    const scrollPos = window.scrollY + navbarHeight + 40;
+
     sections.forEach(section => {
-      const top = section.offsetTop;
+      const top = section.getBoundingClientRect().top + window.scrollY;
       const height = section.offsetHeight;
       const id = section.getAttribute('id');
       if (scrollPos >= top && scrollPos < top + height) {
@@ -182,22 +319,24 @@ function initBJTModule() {
       const xSatPix = x.getPixelForValue(vSat);
       const xEnd = x.getPixelForValue(5.0);
 
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
       ctx.save();
 
       // Cutoff Region (0 to 0.70V)
-      ctx.fillStyle = 'rgba(100, 116, 139, 0.12)';
+      ctx.fillStyle = isDark ? 'rgba(100, 116, 139, 0.12)' : 'rgba(203, 213, 225, 0.25)';
       ctx.fillRect(x0, top, xCut - x0, height);
 
       // Active Region (0.70V to 1.18V)
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.10)' : 'rgba(37, 99, 235, 0.08)';
       ctx.fillRect(xCut, top, xSatPix - xCut, height);
 
       // Saturation Region (1.18V to 5.0V)
-      ctx.fillStyle = 'rgba(6, 182, 212, 0.08)';
+      ctx.fillStyle = isDark ? 'rgba(96, 165, 250, 0.08)' : 'rgba(2, 132, 199, 0.05)';
       ctx.fillRect(xSatPix, top, xEnd - xSatPix, height);
 
       // Region boundary dashed lines
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+      ctx.strokeStyle = isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.6)';
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
 
@@ -212,24 +351,25 @@ function initBJTModule() {
       ctx.stroke();
 
       // Region labels at top
-      ctx.font = '10px "IBM Plex Mono", monospace';
+      ctx.font = '600 10px "Ubuntu Mono", "IBM Plex Mono", monospace';
       ctx.textAlign = 'center';
 
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
       ctx.fillText('CUTOFF', (x0 + xCut) / 2, top + 15);
       ctx.fillText('0.70V', xCut, bottom - 6);
 
-      ctx.fillStyle = '#f59e0b';
+      ctx.fillStyle = isDark ? '#38bdf8' : '#2563eb';
       ctx.fillText('ACTIVE', (xCut + xSatPix) / 2, top + 15);
       ctx.fillText('1.18V', xSatPix, bottom - 6);
 
-      ctx.fillStyle = '#38bdf8';
+      ctx.fillStyle = isDark ? '#60a5fa' : '#0284c7';
       ctx.fillText('SATURATION', (xSatPix + xEnd) / 2, top + 15);
 
       ctx.restore();
     }
   };
 
+  const tc = getThemeColors();
   const curveData = transfer.vin.map((v, i) => ({ x: v, y: transfer.vout[i] }));
 
   bjtChartInstance = new Chart(ctx, {
@@ -239,7 +379,7 @@ function initBJTModule() {
         {
           label: 'Vout (Collector Voltage [V])',
           data: curveData,
-          borderColor: '#06b6d4', // CH2: Cyan
+          borderColor: tc.ch2Color,
           borderWidth: 2.2,
           pointRadius: 0,
           tension: 0.1,
@@ -248,8 +388,8 @@ function initBJTModule() {
         {
           label: 'Operating Point',
           data: [{ x: 0, y: 5.0 }],
-          backgroundColor: '#06b6d4',
-          borderColor: '#ffffff',
+          backgroundColor: tc.opPointBg,
+          borderColor: tc.opPointBorder,
           borderWidth: 2,
           pointRadius: 6,
           pointHoverRadius: 8,
@@ -260,15 +400,16 @@ function initBJTModule() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 50,
       scales: {
         x: {
           type: 'linear',
           min: 0,
           max: 5.0,
-          title: { display: true, text: 'Input Voltage Vin (V)', color: '#94a3b8' },
-          grid: { color: '#1e293b' },
+          title: { display: true, text: 'Input Voltage Vin (V)', color: tc.axisTitleColor },
+          grid: { color: tc.gridColor },
           ticks: {
-            color: '#94a3b8',
+            color: tc.tickColor,
             stepSize: 0.5,
             callback: (v) => Number(v).toFixed(1) + ' V'
           }
@@ -276,10 +417,10 @@ function initBJTModule() {
         y: {
           min: 0,
           max: 5.5,
-          title: { display: true, text: 'Output Voltage Vout (V)', color: '#06b6d4' },
-          grid: { color: '#1e293b' },
+          title: { display: true, text: 'Output Voltage Vout (V)', color: tc.ch2Color },
+          grid: { color: tc.gridColor },
           ticks: {
-            color: '#94a3b8',
+            color: tc.tickColor,
             stepSize: 1.0,
             callback: (v) => Number(v).toFixed(1) + ' V'
           }
@@ -287,7 +428,7 @@ function initBJTModule() {
       },
       plugins: {
         legend: {
-          labels: { color: '#f1f5f9', boxWidth: 12 }
+          labels: { color: tc.legendColor, boxWidth: 12 }
         }
       }
     },
@@ -370,116 +511,125 @@ function initGateModule() {
   }
 
   const renderSVG = (type, a, b, q1On, q2On, vout) => {
-    const colorOn = '#f59e0b';
-    const colorOff = '#475569';
-    const wireColor = '#64748b';
-    const outColor = vout > 2.5 ? '#06b6d4' : '#64748b';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const colorOn = isDark ? '#38bdf8' : '#2563eb';
+    const colorOff = isDark ? '#475569' : '#94a3b8';
+    const wireColor = isDark ? '#64748b' : '#64748b';
+    const outColor = vout > 2.5 ? (isDark ? '#60a5fa' : '#2563eb') : (isDark ? '#64748b' : '#94a3b8');
+    const railColor = isDark ? '#f1f5f9' : '#0f172a';
+    const resFill = isDark ? '#1e293b' : '#f8fafc';
+    const resStroke = isDark ? wireColor : '#cbd5e1';
+    const labelColor = isDark ? '#94a3b8' : '#475569';
 
     if (type === 'NOT') {
       const qColor = q1On ? colorOn : colorOff;
       return `
-        <svg viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
           <!-- +5V Rail -->
-          <text x="120" y="20" fill="#f1f5f9" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
-          <line x1="120" y1="24" x2="120" y2="45" stroke="${wireColor}" stroke-width="2"/>
+          <text x="130" y="18" fill="${railColor}" font-size="11" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
+          <line x1="130" y1="22" x2="130" y2="38" stroke="${wireColor}" stroke-width="2"/>
+          
           <!-- Collector Resistor Rc (1k) -->
-          <rect x="112" y="45" width="16" height="30" fill="#1e293b" stroke="${wireColor}" stroke-width="2"/>
-          <text x="135" y="64" fill="#94a3b8" font-size="9" font-family="'IBM Plex Mono', monospace">Rc 1k</text>
-          <line x1="120" y1="75" x2="120" y2="105" stroke="${wireColor}" stroke-width="2"/>
+          <rect x="122" y="38" width="16" height="26" fill="${resFill}" stroke="${resStroke}" stroke-width="2"/>
+          <text x="145" y="54" fill="${labelColor}" font-size="8" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">Rc 1k</text>
+          <line x1="130" y1="64" x2="130" y2="80" stroke="${wireColor}" stroke-width="2"/>
           
           <!-- OUT Node -->
-          <circle cx="120" cy="100" r="4" fill="${outColor}"/>
-          <line x1="120" y1="100" x2="185" y2="100" stroke="${outColor}" stroke-width="2"/>
-          <circle cx="185" cy="100" r="3" fill="${outColor}"/>
-          <text x="195" y="104" fill="${outColor}" font-size="11" font-weight="600" font-family="'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
+          <circle cx="130" cy="80" r="3.5" fill="${outColor}"/>
+          <line x1="130" y1="80" x2="190" y2="80" stroke="${outColor}" stroke-width="2"/>
+          <circle cx="190" cy="80" r="3" fill="${outColor}"/>
+          <text x="198" y="84" fill="${outColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
+
+          <!-- Drop to Q1 Collector -->
+          <line x1="130" y1="80" x2="130" y2="108" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
 
           <!-- Input A and Rb -->
-          <text x="20" y="128" fill="${a ? colorOn : '#94a3b8'}" font-size="11" font-weight="600" font-family="'IBM Plex Mono', monospace">A (${a ? '5V' : '0V'})</text>
-          <line x1="55" y1="125" x2="70" y2="125" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-          <rect x="70" y="117" width="25" height="16" fill="#1e293b" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-          <text x="82" y="110" fill="#94a3b8" font-size="8" font-family="'IBM Plex Mono', monospace" text-anchor="middle">Rb 10k</text>
-          <line x1="95" y1="125" x2="110" y2="125" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+          <text x="36" y="130" fill="${a ? colorOn : labelColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="end">A (${a ? '5V' : '0V'})</text>
+          <line x1="42" y1="126" x2="64" y2="126" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+          <rect x="64" y="119" width="24" height="14" fill="${resFill}" stroke="${a ? colorOn : resStroke}" stroke-width="2"/>
+          <text x="76" y="113" fill="${labelColor}" font-size="7" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">Rb 10k</text>
+          <line x1="88" y1="126" x2="112" y2="126" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
 
           <!-- Transistor Q1 Symbol -->
-          <circle cx="125" cy="125" r="18" fill="none" stroke="${qColor}" stroke-width="1.5" stroke-dasharray="${q1On ? 'none' : '3,2'}"/>
-          <line x1="110" y1="112" x2="110" y2="138" stroke="${qColor}" stroke-width="3"/>
-          <line x1="110" y1="118" x2="120" y2="105" stroke="${qColor}" stroke-width="2"/>
-          <line x1="110" y1="132" x2="120" y2="145" stroke="${qColor}" stroke-width="2"/>
+          <line x1="112" y1="114" x2="112" y2="138" stroke="${qColor}" stroke-width="2.5"/>
+          <line x1="112" y1="120" x2="130" y2="108" stroke="${qColor}" stroke-width="2"/>
+          <line x1="112" y1="132" x2="130" y2="144" stroke="${qColor}" stroke-width="2"/>
           <!-- Emitter Arrow -->
-          <polygon points="118,142 122,147 115,147" fill="${qColor}"/>
-          <text x="148" y="129" fill="${qColor}" font-size="10" font-weight="600" font-family="'IBM Plex Mono', monospace">Q1 ${q1On ? 'ON' : 'OFF'}</text>
+          <polygon points="126,137 130,144 122,143" fill="${qColor}"/>
+          <text x="145" y="129" fill="${qColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">Q1 ${q1On ? 'ON' : 'OFF'}</text>
 
           <!-- Emitter to GND -->
-          <line x1="120" y1="145" x2="120" y2="185" stroke="${wireColor}" stroke-width="2"/>
+          <line x1="130" y1="144" x2="130" y2="185" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
           <!-- GND Symbol -->
-          <line x1="105" y1="185" x2="135" y2="185" stroke="${wireColor}" stroke-width="2"/>
-          <line x1="110" y1="190" x2="130" y2="190" stroke="${wireColor}" stroke-width="2"/>
-          <line x1="115" y1="195" x2="125" y2="195" stroke="${wireColor}" stroke-width="2"/>
-          <text x="120" y="208" fill="#94a3b8" font-size="9" font-family="'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
+          <line x1="115" y1="185" x2="145" y2="185" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+          <line x1="120" y1="190" x2="140" y2="190" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+          <line x1="125" y1="195" x2="135" y2="195" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+          <text x="130" y="208" fill="${labelColor}" font-size="9" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
         </svg>
       `;
     }
 
     if (type === 'NAND') {
-      // Exactly matching the user's uploaded RTL NAND Schematic (Q1 and Q2 in SERIES)
+      // Exactly matching RTL NAND Schematic: Q1 and Q2 in SERIES
       const q1Col = q1On ? colorOn : colorOff;
       const q2Col = q2On ? colorOn : colorOff;
+      const isPathActive = q1On && q2On;
 
       return `
-        <svg viewBox="0 0 260 270" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 280 270" xmlns="http://www.w3.org/2000/svg">
           <!-- +5V Rail -->
-          <text x="130" y="18" fill="#f1f5f9" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
+          <text x="130" y="18" fill="${railColor}" font-size="11" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
           <line x1="130" y1="22" x2="130" y2="38" stroke="${wireColor}" stroke-width="2"/>
           
           <!-- R3 Collector Pull-up (1k) -->
-          <rect x="122" y="38" width="16" height="26" fill="#1e293b" stroke="${wireColor}" stroke-width="2"/>
-          <text x="145" y="54" fill="#94a3b8" font-size="8" font-family="'IBM Plex Mono', monospace">R3 1k</text>
-          <line x1="130" y1="64" x2="130" y2="82" stroke="${wireColor}" stroke-width="2"/>
+          <rect x="122" y="38" width="16" height="26" fill="${resFill}" stroke="${resStroke}" stroke-width="2"/>
+          <text x="145" y="54" fill="${labelColor}" font-size="8" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">R3 1k</text>
+          <line x1="130" y1="64" x2="130" y2="80" stroke="${wireColor}" stroke-width="2"/>
           
           <!-- OUT Node -->
-          <circle cx="130" cy="78" r="4" fill="${outColor}"/>
-          <line x1="130" y1="78" x2="200" y2="78" stroke="${outColor}" stroke-width="2"/>
-          <circle cx="200" cy="78" r="3" fill="${outColor}"/>
-          <text x="208" y="82" fill="${outColor}" font-size="11" font-weight="600" font-family="'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
+          <circle cx="130" cy="80" r="3.5" fill="${outColor}"/>
+          <line x1="130" y1="80" x2="190" y2="80" stroke="${outColor}" stroke-width="2"/>
+          <circle cx="190" cy="80" r="3" fill="${outColor}"/>
+          <text x="198" y="84" fill="${outColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
 
           <!-- Input A -> R1 10k -> Q1 Base -->
-          <text x="10" y="104" fill="${a ? colorOn : '#94a3b8'}" font-size="10" font-weight="600" font-family="'IBM Plex Mono', monospace">A (${a ? '5V' : '0V'})</text>
-          <line x1="48" y1="100" x2="62" y2="100" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-          <rect x="62" y="93" width="22" height="14" fill="#1e293b" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-          <text x="73" y="88" fill="#94a3b8" font-size="7" font-family="'IBM Plex Mono', monospace" text-anchor="middle">R1 10k</text>
-          <line x1="84" y1="100" x2="115" y2="100" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+          <text x="36" y="104" fill="${a ? colorOn : labelColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="end">A (${a ? '5V' : '0V'})</text>
+          <line x1="42" y1="100" x2="66" y2="100" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+          <rect x="66" y="93" width="24" height="14" fill="${resFill}" stroke="${a ? colorOn : resStroke}" stroke-width="2"/>
+          <text x="78" y="87" fill="${labelColor}" font-size="7" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">R1 10k</text>
+          <line x1="90" y1="100" x2="115" y2="100" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
 
           <!-- Transistor Q1 (BC547B) -->
-          <line x1="115" y1="88" x2="115" y2="112" stroke="${q1Col}" stroke-width="3"/>
-          <line x1="115" y1="94" x2="130" y2="82" stroke="${q1Col}" stroke-width="2"/>
-          <line x1="115" y1="106" x2="130" y2="118" stroke="${q1Col}" stroke-width="2"/>
-          <polygon points="127,115 131,120 125,120" fill="${q1Col}"/>
-          <text x="145" y="102" fill="${q1Col}" font-size="9" font-weight="600" font-family="'IBM Plex Mono', monospace">Q1 ${q1On ? 'ON' : 'OFF'}</text>
+          <line x1="115" y1="88" x2="115" y2="112" stroke="${q1Col}" stroke-width="2.5"/>
+          <line x1="115" y1="94" x2="130" y2="80" stroke="${q1Col}" stroke-width="2"/>
+          <line x1="115" y1="106" x2="130" y2="120" stroke="${q1Col}" stroke-width="2"/>
+          <polygon points="126,113 130,120 122,119" fill="${q1Col}"/>
+          <text x="145" y="103" fill="${q1Col}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">Q1 ${q1On ? 'ON' : 'OFF'}</text>
 
           <!-- Series Link: Q1 Emitter to Q2 Collector -->
-          <line x1="130" y1="118" x2="130" y2="148" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+          <line x1="130" y1="120" x2="130" y2="146" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
 
           <!-- Input B -> R2 10k -> Q2 Base -->
-          <text x="10" y="170" fill="${b ? colorOn : '#94a3b8'}" font-size="10" font-weight="600" font-family="'IBM Plex Mono', monospace">B (${b ? '5V' : '0V'})</text>
-          <line x1="48" y1="166" x2="62" y2="166" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
-          <rect x="62" y="159" width="22" height="14" fill="#1e293b" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
-          <text x="73" y="154" fill="#94a3b8" font-size="7" font-family="'IBM Plex Mono', monospace" text-anchor="middle">R2 10k</text>
-          <line x1="84" y1="166" x2="115" y2="166" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
+          <text x="36" y="170" fill="${b ? colorOn : labelColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="end">B (${b ? '5V' : '0V'})</text>
+          <line x1="42" y1="166" x2="66" y2="166" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
+          <rect x="66" y="159" width="24" height="14" fill="${resFill}" stroke="${b ? colorOn : resStroke}" stroke-width="2"/>
+          <text x="78" y="153" fill="${labelColor}" font-size="7" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">R2 10k</text>
+          <line x1="90" y1="166" x2="115" y2="166" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
 
           <!-- Transistor Q2 (BC547B) -->
-          <line x1="115" y1="154" x2="115" y2="178" stroke="${q2Col}" stroke-width="3"/>
-          <line x1="115" y1="160" x2="130" y2="148" stroke="${q2Col}" stroke-width="2"/>
-          <line x1="115" y1="172" x2="130" y2="184" stroke="${q2Col}" stroke-width="2"/>
-          <polygon points="127,181 131,186 125,186" fill="${q2Col}"/>
-          <text x="145" y="168" fill="${q2Col}" font-size="9" font-weight="600" font-family="'IBM Plex Mono', monospace">Q2 ${q2On ? 'ON' : 'OFF'}</text>
+          <line x1="115" y1="154" x2="115" y2="178" stroke="${q2Col}" stroke-width="2.5"/>
+          <line x1="115" y1="160" x2="130" y2="146" stroke="${q2Col}" stroke-width="2"/>
+          <line x1="115" y1="172" x2="130" y2="186" stroke="${q2Col}" stroke-width="2"/>
+          <polygon points="126,179 130,186 122,185" fill="${q2Col}"/>
+          <text x="145" y="169" fill="${q2Col}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">Q2 ${q2On ? 'ON' : 'OFF'}</text>
 
           <!-- Q2 Emitter to GND -->
-          <line x1="130" y1="184" x2="130" y2="218" stroke="${wireColor}" stroke-width="2"/>
+          <line x1="130" y1="186" x2="130" y2="218" stroke="${isPathActive ? colorOn : wireColor}" stroke-width="2"/>
           <!-- GND Symbol -->
-          <line x1="115" y1="218" x2="145" y2="218" stroke="${wireColor}" stroke-width="2"/>
-          <line x1="120" y1="223" x2="140" y2="223" stroke="${wireColor}" stroke-width="2"/>
-          <line x1="125" y1="228" x2="135" y2="228" stroke="${wireColor}" stroke-width="2"/>
-          <text x="130" y="240" fill="#94a3b8" font-size="9" font-family="'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
+          <line x1="115" y1="218" x2="145" y2="218" stroke="${isPathActive ? colorOn : wireColor}" stroke-width="2"/>
+          <line x1="120" y1="223" x2="140" y2="223" stroke="${isPathActive ? colorOn : wireColor}" stroke-width="2"/>
+          <line x1="125" y1="228" x2="135" y2="228" stroke="${isPathActive ? colorOn : wireColor}" stroke-width="2"/>
+          <text x="130" y="240" fill="${labelColor}" font-size="9" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
         </svg>
       `;
     }
@@ -487,59 +637,72 @@ function initGateModule() {
     // NOR: Q1 and Q2 in parallel
     const q1Col = q1On ? colorOn : colorOff;
     const q2Col = q2On ? colorOn : colorOff;
+    const isEitherOn = q1On || q2On;
 
     return `
-      <svg viewBox="0 0 280 240" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 340 235" xmlns="http://www.w3.org/2000/svg">
         <!-- +5V Rail -->
-        <text x="140" y="18" fill="#f1f5f9" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
-        <line x1="140" y1="22" x2="140" y2="38" stroke="${wireColor}" stroke-width="2"/>
-        <rect x="132" y="38" width="16" height="26" fill="#1e293b" stroke="${wireColor}" stroke-width="2"/>
-        <text x="154" y="54" fill="#94a3b8" font-size="8" font-family="'IBM Plex Mono', monospace">Rc 1k</text>
-        <line x1="140" y1="64" x2="140" y2="80" stroke="${wireColor}" stroke-width="2"/>
+        <text x="170" y="18" fill="${railColor}" font-size="11" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">+5V</text>
+        <line x1="170" y1="22" x2="170" y2="38" stroke="${wireColor}" stroke-width="2"/>
+        <rect x="162" y="38" width="16" height="26" fill="${resFill}" stroke="${resStroke}" stroke-width="2"/>
+        <text x="184" y="54" fill="${labelColor}" font-size="8" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">Rc 1k</text>
+        <line x1="170" y1="64" x2="170" y2="80" stroke="${wireColor}" stroke-width="2"/>
         
         <!-- OUT Node -->
-        <circle cx="140" cy="80" r="4" fill="${outColor}"/>
-        <line x1="140" y1="80" x2="225" y2="80" stroke="${outColor}" stroke-width="2"/>
-        <circle cx="225" cy="80" r="3" fill="${outColor}"/>
-        <text x="232" y="84" fill="${outColor}" font-size="10" font-weight="600" font-family="'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
+        <circle cx="170" cy="80" r="3.5" fill="${outColor}"/>
+        <line x1="170" y1="80" x2="235" y2="80" stroke="${outColor}" stroke-width="2"/>
+        <circle cx="235" cy="80" r="3" fill="${outColor}"/>
+        <text x="242" y="84" fill="${outColor}" font-size="10" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace">OUT (${vout.toFixed(1)}V)</text>
+
+        <!-- Vertical connection from OUT node to parallel split bar -->
+        <line x1="170" y1="80" x2="170" y2="94" stroke="${isEitherOn ? colorOn : wireColor}" stroke-width="2"/>
 
         <!-- Split to Parallel Q1 and Q2 Collectors -->
-        <line x1="100" y1="92" x2="180" y2="92" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="100" y1="92" x2="100" y2="105" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="180" y1="92" x2="180" y2="105" stroke="${wireColor}" stroke-width="2"/>
+        <line x1="136" y1="94" x2="170" y2="94" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="170" y1="94" x2="204" y2="94" stroke="${q2On ? colorOn : wireColor}" stroke-width="2"/>
+        <circle cx="170" cy="94" r="2.5" fill="${isEitherOn ? colorOn : wireColor}"/>
+
+        <!-- Drops to Collectors -->
+        <line x1="136" y1="94" x2="136" y2="108" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="204" y1="94" x2="204" y2="108" stroke="${q2On ? colorOn : wireColor}" stroke-width="2"/>
 
         <!-- Q1 Left (Input A) -->
-        <text x="10" y="128" fill="${a ? colorOn : '#94a3b8'}" font-size="9" font-weight="600" font-family="'IBM Plex Mono', monospace">A (${a ? '5V' : '0V'})</text>
-        <line x1="45" y1="125" x2="58" y2="125" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-        <rect x="58" y="119" width="18" height="12" fill="#1e293b" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-        <line x1="76" y1="125" x2="90" y2="125" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
-        <line x1="90" y1="115" x2="90" y2="135" stroke="${q1Col}" stroke-width="2.5"/>
-        <line x1="90" y1="120" x2="100" y2="108" stroke="${q1Col}" stroke-width="2"/>
-        <line x1="90" y1="130" x2="100" y2="142" stroke="${q1Col}" stroke-width="2"/>
-        <polygon points="98,139 101,144 95,144" fill="${q1Col}"/>
-        <text x="92" y="156" fill="${q1Col}" font-size="8" font-family="'IBM Plex Mono', monospace">Q1</text>
+        <text x="44" y="130" fill="${a ? colorOn : labelColor}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="end">A (${a ? '5V' : '0V'})</text>
+        <line x1="48" y1="126" x2="72" y2="126" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+        <rect x="72" y="119" width="22" height="14" fill="${resFill}" stroke="${a ? colorOn : resStroke}" stroke-width="2"/>
+        <text x="83" y="114" fill="${labelColor}" font-size="7" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">R1 10k</text>
+        <line x1="94" y1="126" x2="120" y2="126" stroke="${a ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="120" y1="114" x2="120" y2="138" stroke="${q1Col}" stroke-width="2.5"/>
+        <line x1="120" y1="120" x2="136" y2="108" stroke="${q1Col}" stroke-width="2"/>
+        <line x1="120" y1="132" x2="136" y2="144" stroke="${q1Col}" stroke-width="2"/>
+        <polygon points="132,137 136,144 128,143" fill="${q1Col}"/>
+        <text x="110" y="152" fill="${q1Col}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">Q1</text>
 
         <!-- Q2 Right (Input B) -->
-        <text x="205" y="128" fill="${b ? colorOn : '#94a3b8'}" font-size="9" font-weight="600" font-family="'IBM Plex Mono', monospace">B (${b ? '5V' : '0V'})</text>
-        <line x1="202" y1="125" x2="188" y2="125" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
-        <rect x="170" y="119" width="18" height="12" fill="#1e293b" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
-        <line x1="170" y1="125" x2="155" y2="125" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
-        <line x1="155" y1="115" x2="155" y2="135" stroke="${q2Col}" stroke-width="2.5"/>
-        <line x1="155" y1="120" x2="145" y2="108" stroke="${q2Col}" stroke-width="2"/>
-        <line x1="155" y1="130" x2="145" y2="142" stroke="${q2Col}" stroke-width="2"/>
-        <polygon points="147,139 150,144 144,144" fill="${q2Col}"/>
-        <text x="142" y="156" fill="${q2Col}" font-size="8" font-family="'IBM Plex Mono', monospace">Q2</text>
+        <text x="296" y="130" fill="${b ? colorOn : labelColor}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="start">B (${b ? '5V' : '0V'})</text>
+        <line x1="268" y1="126" x2="292" y2="126" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
+        <rect x="246" y="119" width="22" height="14" fill="${resFill}" stroke="${b ? colorOn : resStroke}" stroke-width="2"/>
+        <text x="257" y="114" fill="${labelColor}" font-size="7" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">R2 10k</text>
+        <line x1="220" y1="126" x2="246" y2="126" stroke="${b ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="220" y1="114" x2="220" y2="138" stroke="${q2Col}" stroke-width="2.5"/>
+        <line x1="220" y1="120" x2="204" y2="108" stroke="${q2Col}" stroke-width="2"/>
+        <line x1="220" y1="132" x2="204" y2="144" stroke="${q2Col}" stroke-width="2"/>
+        <polygon points="208,137 204,144 212,143" fill="${q2Col}"/>
+        <text x="230" y="152" fill="${q2Col}" font-size="9" font-weight="600" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">Q2</text>
 
-        <!-- Join Emitters to GND -->
-        <line x1="100" y1="142" x2="100" y2="175" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="145" y1="142" x2="145" y2="175" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="100" y1="175" x2="145" y2="175" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="122" y1="175" x2="122" y2="195" stroke="${wireColor}" stroke-width="2"/>
+        <!-- Join Parallel Emitters to GND -->
+        <line x1="136" y1="144" x2="136" y2="175" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="204" y1="144" x2="204" y2="175" stroke="${q2On ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="136" y1="175" x2="170" y2="175" stroke="${q1On ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="170" y1="175" x2="204" y2="175" stroke="${q2On ? colorOn : wireColor}" stroke-width="2"/>
+        <circle cx="170" cy="175" r="2.5" fill="${isEitherOn ? colorOn : wireColor}"/>
+        <line x1="170" y1="175" x2="170" y2="196" stroke="${isEitherOn ? colorOn : wireColor}" stroke-width="2"/>
+
         <!-- GND Symbol -->
-        <line x1="110" y1="195" x2="135" y2="195" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="115" y1="200" x2="130" y2="200" stroke="${wireColor}" stroke-width="2"/>
-        <line x1="119" y1="205" x2="126" y2="205" stroke="${wireColor}" stroke-width="2"/>
-        <text x="122" y="217" fill="#94a3b8" font-size="9" font-family="'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
+        <line x1="155" y1="196" x2="185" y2="196" stroke="${isEitherOn ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="160" y1="201" x2="180" y2="201" stroke="${isEitherOn ? colorOn : wireColor}" stroke-width="2"/>
+        <line x1="165" y1="206" x2="175" y2="206" stroke="${isEitherOn ? colorOn : wireColor}" stroke-width="2"/>
+        <text x="170" y="218" fill="${labelColor}" font-size="9" font-family="'Ubuntu Mono', 'IBM Plex Mono', monospace" text-anchor="middle">GND</text>
       </svg>
     `;
   };
@@ -625,6 +788,7 @@ function initGateModule() {
     }
   };
 
+  renderGateGlobal = renderGate;
   renderGate();
 }
 
@@ -740,7 +904,9 @@ function initAmpModule() {
   let currentPreset = 'ltspice-12v';
   let isBypassed = true;
 
-  // Chart 1: Small-Signal AC Input Waveform in mV (CH1: Amber)
+  const tc = getThemeColors();
+
+  // Chart 1: Small-Signal AC Input Waveform in mV (CH1: Sky Blue)
   ceInputChartInstance = new Chart(inputCtx, {
     type: 'line',
     data: {
@@ -749,8 +915,8 @@ function initAmpModule() {
         {
           label: 'Vin (Input AC [mV])',
           data: [],
-          borderColor: '#f59e0b', // CH1 Amber
-          backgroundColor: 'rgba(245, 158, 11, 0.08)',
+          borderColor: tc.ch1Color,
+          backgroundColor: tc.ch1Fill,
           borderWidth: 2,
           pointRadius: 0,
           tension: 0.3,
@@ -761,16 +927,17 @@ function initAmpModule() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 50,
       scales: {
         x: {
           display: true,
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8', maxTicksLimit: 6 }
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor, maxTicksLimit: 6 }
         },
         y: {
-          title: { display: true, text: 'Vin (mV)', color: '#f59e0b' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8' }
+          title: { display: true, text: 'Vin (mV)', color: tc.ch1Color },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor }
         }
       },
       plugins: {
@@ -779,7 +946,7 @@ function initAmpModule() {
     }
   });
 
-  // Chart 2: Output Waveform in V with Dashed Grey Reference Lines (CH2: Cyan)
+  // Chart 2: Output Waveform in V with Dashed Grey Reference Lines (CH2: Royal Blue)
   ceChartInstance = new Chart(outputCtx, {
     type: 'line',
     data: {
@@ -788,8 +955,8 @@ function initAmpModule() {
         {
           label: 'Vout (Collector Waveform [V])',
           data: [],
-          borderColor: '#06b6d4', // CH2 Cyan
-          backgroundColor: 'rgba(6, 182, 212, 0.06)',
+          borderColor: tc.ch2Color,
+          backgroundColor: tc.ch2Fill,
           borderWidth: 2.2,
           pointRadius: 0,
           tension: 0.3,
@@ -798,7 +965,7 @@ function initAmpModule() {
         {
           label: 'Cutoff Ceiling (VCC)',
           data: [],
-          borderColor: '#64748b', // Dashed Grey Ref Line
+          borderColor: tc.refColor,
           borderWidth: 1.5,
           borderDash: [5, 4],
           pointRadius: 0,
@@ -807,7 +974,7 @@ function initAmpModule() {
         {
           label: 'Saturation Floor (VCE,sat)',
           data: [],
-          borderColor: '#64748b', // Dashed Grey Ref Line
+          borderColor: tc.refColor,
           borderWidth: 1.5,
           borderDash: [5, 4],
           pointRadius: 0,
@@ -818,22 +985,23 @@ function initAmpModule() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 50,
       scales: {
         x: {
-          title: { display: true, text: 'Time (ms)', color: '#94a3b8' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8', maxTicksLimit: 6 }
+          title: { display: true, text: 'Time (ms)', color: tc.axisTitleColor },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor, maxTicksLimit: 6 }
         },
         y: {
           min: 0,
           max: 13.0,
-          title: { display: true, text: 'Vout (V)', color: '#06b6d4' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8' }
+          title: { display: true, text: 'Vout (V)', color: tc.ch2Color },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor }
         }
       },
       plugins: {
-        legend: { labels: { color: '#f1f5f9', boxWidth: 12 } }
+        legend: { labels: { color: tc.legendColor, boxWidth: 12 } }
       }
     }
   });
@@ -1004,6 +1172,8 @@ function initNeuronModule() {
     zPoints.push(parseFloat(z.toFixed(2)));
   }
 
+  const tc = getThemeColors();
+
   neuronChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
@@ -1011,7 +1181,7 @@ function initNeuronModule() {
         {
           label: 'Activation Function f(z)',
           data: [],
-          borderColor: '#06b6d4', // CH2: Cyan
+          borderColor: tc.ch2Color,
           borderWidth: 2.2,
           pointRadius: 0,
           tension: 0.1,
@@ -1020,8 +1190,8 @@ function initNeuronModule() {
         {
           label: 'Operating Point',
           data: [{ x: 0, y: 0.5 }],
-          backgroundColor: '#06b6d4',
-          borderColor: '#ffffff',
+          backgroundColor: tc.opPointBg,
+          borderColor: tc.opPointBorder,
           borderWidth: 2,
           pointRadius: 6,
           pointHoverRadius: 8,
@@ -1032,25 +1202,26 @@ function initNeuronModule() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 50,
       scales: {
         x: {
           type: 'linear',
           min: -5,
           max: 5,
-          title: { display: true, text: 'Affine Sum z = wTx + b', color: '#94a3b8' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8', stepSize: 1.0 }
+          title: { display: true, text: 'Affine Sum z = wTx + b', color: tc.axisTitleColor },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor, stepSize: 1.0 }
         },
         y: {
           min: -0.2,
           max: 1.2,
-          title: { display: true, text: 'Output y = f(z)', color: '#06b6d4' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8', stepSize: 0.2 }
+          title: { display: true, text: 'Output y = f(z)', color: tc.ch2Color },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor, stepSize: 0.2 }
         }
       },
       plugins: {
-        legend: { labels: { color: '#f1f5f9', boxWidth: 12 } }
+        legend: { labels: { color: tc.legendColor, boxWidth: 12 } }
       }
     }
   });
@@ -1121,6 +1292,8 @@ function initLIFModule() {
 
   const ctx = canvas.getContext('2d');
 
+  const tc = getThemeColors();
+
   lifChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
@@ -1128,8 +1301,8 @@ function initLIFModule() {
         {
           label: 'Membrane Potential V(t) [V]',
           data: [],
-          borderColor: '#06b6d4', // CH2 Cyan
-          backgroundColor: 'rgba(6, 182, 212, 0.08)',
+          borderColor: tc.ch2Color,
+          backgroundColor: tc.ch2Fill,
           borderWidth: 2,
           pointRadius: 0,
           tension: 0.05,
@@ -1138,7 +1311,7 @@ function initLIFModule() {
         {
           label: 'Threshold Vth [V]',
           data: [],
-          borderColor: '#64748b', // Dashed Grey Ref Line
+          borderColor: tc.refColor,
           borderWidth: 1.5,
           borderDash: [6, 4],
           pointRadius: 0,
@@ -1147,7 +1320,7 @@ function initLIFModule() {
         {
           label: 'Action Potential Spikes (δ)',
           data: [],
-          backgroundColor: '#f59e0b',
+          backgroundColor: tc.ch1Color,
           borderColor: '#ffffff',
           borderWidth: 1.5,
           pointStyle: 'triangle',
@@ -1160,15 +1333,16 @@ function initLIFModule() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 50,
       scales: {
         x: {
           type: 'linear',
           min: 0,
           max: 500, // Clean time axis in milliseconds
-          title: { display: true, text: 'Time (ms)', color: '#94a3b8' },
-          grid: { color: '#1e293b' },
+          title: { display: true, text: 'Time (ms)', color: tc.axisTitleColor },
+          grid: { color: tc.gridColor },
           ticks: {
-            color: '#94a3b8',
+            color: tc.tickColor,
             stepSize: 100,
             callback: (v) => v + ' ms'
           }
@@ -1176,13 +1350,13 @@ function initLIFModule() {
         y: {
           min: 0,
           max: 2.2,
-          title: { display: true, text: 'Membrane Potential (V)', color: '#06b6d4' },
-          grid: { color: '#1e293b' },
-          ticks: { color: '#94a3b8', stepSize: 0.5 }
+          title: { display: true, text: 'Membrane Potential (V)', color: tc.ch2Color },
+          grid: { color: tc.gridColor },
+          ticks: { color: tc.tickColor, stepSize: 0.5 }
         }
       },
       plugins: {
-        legend: { labels: { color: '#f1f5f9', boxWidth: 12 } }
+        legend: { labels: { color: tc.legendColor, boxWidth: 12 } }
       }
     }
   });
@@ -1279,6 +1453,17 @@ function initLightboxModal() {
       closeModal();
     }
   });
+}
+
+/* ============================================================
+ * Auto-initialization
+ * ============================================================ */
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
 }
 
 /* ============================================================

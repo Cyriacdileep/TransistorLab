@@ -6,6 +6,10 @@
   <title>TransistorLab: From Silicon to Intelligence</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="alternate icon" href="assets/favicon.ico">
+  <!-- Google Fonts: Ubuntu & Ubuntu Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <!-- Local Offline Chart.js 4.4.1 -->
   <script src="js/vendor/chart.umd.min.js"></script>
@@ -18,14 +22,17 @@
       <span class="title">TransistorLab</span>
       <span class="badge">Datasheet &bull; v2.0</span>
     </div>
+
+    <!-- Centered Navigation Menu -->
+    <nav class="nav-links" id="main-nav" aria-label="Main Navigation">
+      <a href="#overview" class="active">Overview</a>
+      <a href="#digital">1. Digital</a>
+      <a href="#analog">2. Analog</a>
+      <a href="#neural">3. Neural</a>
+      <a href="#validation">Validation</a>
+    </nav>
+
     <div class="nav-actions">
-      <nav class="nav-links" id="main-nav">
-        <a href="#overview" class="active">Overview</a>
-        <a href="#digital">1. Digital</a>
-        <a href="#analog">2. Analog</a>
-        <a href="#neural">3. Neural</a>
-        <a href="#validation">Validation</a>
-      </nav>
       <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light or dark theme">
         <span id="theme-icon">◐</span> <span id="theme-text">Theme</span>
       </button>
@@ -122,7 +129,9 @@
                 <span class="chart-tag output-tag">CH2: Vout (Collector Voltage [V])</span>
                 <span class="chart-subtag">Sweep: 0.00 to 5.00 V &bull; VCC = 5 V</span>
               </div>
-              <canvas id="bjtChart" aria-label="BJT Transfer Curve Plot"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="bjtChart" aria-label="BJT Transfer Curve Plot"></canvas>
+              </div>
             </div>
           </div>
 
@@ -147,9 +156,9 @@
           </div>
         </div>
 
-        <!-- Hardware & LTspice Verification -->
+        <!-- LTspice Simulation & Bench Verification -->
         <div class="asset-showcase-section">
-          <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
+          <h4 class="showcase-title">LTspice Bench Verification</h4>
           <div class="asset-gallery-grid">
             <div class="gallery-card" data-lightbox="assets/bjt-inverter-schematic.jpeg" data-caption="LTspice Schematic: BJT Inverter Switch with BC547B NPN transistor, collector pull-up resistor Rc=1kΩ to Vcc=5V, and base current limiting resistor Rb=10kΩ.">
               <div class="gallery-img-container">
@@ -242,17 +251,17 @@
           </div>
         </div>
 
-        <!-- Reference Hardware Schematic Showcase (Including User's RTL NAND Schematic) -->
+        <!-- Reference KiCad EDA Schematic Showcase (User's RTL NAND Schematic) -->
         <div class="asset-showcase-section">
-          <h4 class="showcase-title">Hardware Schematic Verification</h4>
+          <h4 class="showcase-title">KiCad Schematic Verification</h4>
           <div class="asset-gallery-grid">
-            <div class="gallery-card" data-lightbox="assets/rtl-nand-schematic.jpg" data-caption="RTL NAND Gate Schematic (TransistorLab): Q1 and Q2 in series. OUT is pulled low (Vce,sat) only when both inputs A and B are driven high (+5V). R3=1kΩ collector pull-up, R1=R2=10kΩ base current limiting.">
+            <div class="gallery-card" data-lightbox="assets/rtl-nand-schematic.jpg" data-caption="KiCad RTL NAND Gate Schematic (TransistorLab): Q1 and Q2 in series. OUT is pulled low (Vce,sat) only when both inputs A and B are driven high (+5V). R3=1kΩ collector pull-up, R1=R2=10kΩ base current limiting.">
               <div class="gallery-img-container">
-                <img src="assets/rtl-nand-schematic.jpg" alt="RTL NAND Gate Transistor Schematic" class="gallery-thumb">
+                <img src="assets/rtl-nand-schematic.jpg" alt="KiCad RTL NAND Gate Transistor Schematic" class="gallery-thumb">
                 <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
               </div>
               <div class="gallery-info">
-                <strong>RTL NAND Gate: Transistor Series Circuit</strong>
+                <strong>KiCad RTL NAND Gate: Transistor Series Circuit</strong>
                 <span>BC547B Q1 &amp; Q2 in series &bull; R3=1k&Omega; pull-up, R1=R2=10k&Omega; base</span>
               </div>
             </div>
@@ -372,7 +381,9 @@
                   <span class="chart-tag input-tag">CH1: Input Signal (v<sub>in</sub>) [mV]</span>
                   <span class="chart-subtag">Small-signal AC excitation &bull; 1 kHz</span>
                 </div>
-                <canvas id="ceInputChart" aria-label="Input AC Waveform in mV"></canvas>
+                <div class="chart-canvas-container">
+                  <canvas id="ceInputChart" aria-label="Input AC Waveform in mV"></canvas>
+                </div>
               </div>
 
               <div class="chart-wrapper ce-output-chart-wrapper">
@@ -380,7 +391,9 @@
                   <span class="chart-tag output-tag">CH2: Output Waveform (v<sub>out</sub>) [V]</span>
                   <span class="chart-subtag">Amplified &amp; inverted collector voltage &bull; 1 kHz</span>
                 </div>
-                <canvas id="ceChart" aria-label="Output Collector Waveform in V"></canvas>
+                <div class="chart-canvas-container">
+                  <canvas id="ceChart" aria-label="Output Collector Waveform in V"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -420,7 +433,7 @@
 
         <!-- Asset Showcase: LTspice Schematic and Waveform Benchmarks -->
         <div class="asset-showcase-section">
-          <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
+          <h4 class="showcase-title">LTspice Bench Verification</h4>
           <div class="asset-gallery-grid">
             <div class="gallery-card" data-lightbox="assets/ce-amplifier-schematic.jpeg" data-caption="LTspice Circuit Schematic: Common-Emitter Amplifier with Voltage Divider Bias (V2=12V, R3=47kΩ, R4=10kΩ, R1=4.7kΩ collector load, R2=1kΩ emitter resistor, C2=100µF emitter bypass, BC547B NPN BJT).">
               <div class="gallery-img-container">
@@ -541,7 +554,9 @@
                 <span class="chart-tag output-tag">CH2: Activation Curve f(z)</span>
                 <span class="chart-subtag">Operating Point at current z</span>
               </div>
-              <canvas id="neuronChart" aria-label="Neuron Activation Function Response"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="neuronChart" aria-label="Neuron Activation Function Response"></canvas>
+              </div>
             </div>
           </div>
 
@@ -601,7 +616,9 @@
                 <span class="chart-tag output-tag">CH2: Membrane Potential V(t) [V]</span>
                 <span class="chart-subtag">Time: 0 to 500 ms &bull; Spikes marked at threshold</span>
               </div>
-              <canvas id="lifChart" aria-label="LIF Membrane Potential Waveform Plot"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="lifChart" aria-label="LIF Membrane Potential Waveform Plot"></canvas>
+              </div>
             </div>
           </div>
 
