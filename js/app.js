@@ -6,9 +6,12 @@ import {
   gate,
   add4,
   AMP,
+  AMP_CIRCUITS,
   ceBias,
   ceAmp,
   neuron,
+  ACTIVATIONS,
+  ACTIVATION_META,
   lif,
   lifPeriod
 } from './models.js';
@@ -25,8 +28,14 @@ const state = {
   adderA: 5,
   adderB: 9,
   // Module 2
-  amp: 0.20,
-  gain: 4.70,
+  ce: {
+    preset: 'ltspice-12v',
+    bypassed: true,
+    amp: 0.010,
+    gain: 159.1
+  },
+  amp: 0.010,
+  gain: 159.1,
   // Module 3
   perceptron: {
     x: [1.0, 0.5, 0.2],
@@ -63,6 +72,7 @@ function initApp() {
   initAmpModule();
   initNeuronModule();
   initLIFModule();
+  initLightboxModal();
 }
 
 /* ============================================================
@@ -307,17 +317,19 @@ function initAdderModule() {
 }
 
 /* ============================================================
- * Module 2: Common-Emitter Amplifier
+ * Module 2: Common-Emitter Amplifier & Rail Clipping
  * ============================================================ */
 function initAmpModule() {
+  const presetSelect = document.getElementById('ce-preset-select');
+  const bypassBtn = document.getElementById('btn-toggle-bypass');
   const ampSlider = document.getElementById('amp-slider');
   const gainSlider = document.getElementById('gain-slider');
   const ampDisp = document.getElementById('amp-display');
   const gainDisp = document.getElementById('gain-display');
   const ctx = document.getElementById('ceChart').getContext('2d');
 
-  const bias = ceBias();
-  document.getElementById('ce-vq').textContent = `${bias.vc.toFixed(2)} V`;
+  let currentPreset = 'ltspice-12v';
+  let isBypassed = true;
 
   ceChartInstance = new Chart(ctx, {
     type: 'line',
@@ -325,7 +337,7 @@ function initAmpModule() {
       labels: [],
       datasets: [
         {
-          label: 'Vin (Input)',
+          label: 'Vin (Input Signal + Base Bias)',
           data: [],
           borderColor: '#10b981',
           borderWidth: 2,
@@ -333,7 +345,7 @@ function initAmpModule() {
           tension: 0.3
         },
         {
-          label: 'Vout (Amplified & Inverted)',
+          label: 'Vout (Collector Waveform)',
           data: [],
           borderColor: '#f59e0b',
           borderWidth: 2.5,
@@ -353,7 +365,7 @@ function initAmpModule() {
         },
         y: {
           min: 0,
-          max: 5.5,
+          max: 13.0,
           title: { display: true, text: 'Voltage (V)', color: '#94a3b8' },
           grid: { color: '#243048' },
           ticks: { color: '#94a3b8' }
@@ -365,35 +377,142 @@ function initAmpModule() {
     }
   });
 
+  const syncControlsForPreset = () => {
+    if (currentPreset === 'ltspice-12v') {
+      if (isBypassed) {
+        ampSlider.min = '0.002';
+        ampSlider.max = '0.050';
+        ampSlider.step = '0.002';
+        if (parseFloat(ampSlider.value) > 0.050 || parseFloat(ampSlider.value) < 0.002) {
+          ampSlider.value = '0.010';
+        }
+        gainSlider.min = '10';
+        gainSlider.max = '250';
+        gainSlider.step = '1';
+        gainSlider.value = '159.1';
+      } else {
+        ampSlider.min = '0.05';
+        ampSlider.max = '2.00';
+        ampSlider.step = '0.05';
+        gainSlider.min = '1';
+        gainSlider.max = '15';
+        gainSlider.step = '0.1';
+        gainSlider.value = '3.2';
+      }
+      ceChartInstance.options.scales.y.max = 13.0;
+    } else {
+      ampSlider.min = '0.05';
+      ampSlider.max = '1.50';
+      ampSlider.step = '0.05';
+      if (parseFloat(ampSlider.value) > 1.50) {
+        ampSlider.value = '0.20';
+      }
+      gainSlider.min = '1.0';
+      gainSlider.max = '10.0';
+      gainSlider.step = '0.1';
+      gainSlider.value = '4.70';
+      ceChartInstance.options.scales.y.max = 5.5;
+    }
+  };
+
   const updateAmp = () => {
+    const circuitBase = currentPreset === 'ltspice-12v' 
+      ? AMP_CIRCUITS['ltspice-12v'] 
+      : AMP_CIRCUITS['default-5v'];
+    const circuit = { ...circuitBase, bypassed: isBypassed };
+
+    const bias = ceBias(circuit);
     state.amp = parseFloat(ampSlider.value);
     state.gain = parseFloat(gainSlider.value);
-    ampDisp.textContent = `${state.amp.toFixed(2)} V`;
-    gainDisp.textContent = state.gain.toFixed(2);
 
-    const res = ceAmp(state.amp, state.gain);
+    // Format display string for millivolts if < 0.1 V
+    if (state.amp < 0.1) {
+      ampDisp.textContent = `${(state.amp * 1000).toFixed(0)} mV (${state.amp.toFixed(3)} V)`;
+    } else {
+      ampDisp.textContent = `${state.amp.toFixed(2)} V`;
+    }
+    gainDisp.textContent = state.gain.toFixed(1);
+
+    const res = ceAmp(state.amp, state.gain, { circuit, preset: currentPreset, bypassed: isBypassed });
+
+    // Update readouts
+    const vqEl = document.getElementById('ce-vq');
+    if (vqEl) vqEl.textContent = `${res.vq.toFixed(2)} V`;
+
+    const gmEl = document.getElementById('ce-gm');
+    if (gmEl) gmEl.textContent = `${(bias.gm * 1000).toFixed(1)} mS`;
+
+    const rloadEl = document.getElementById('ce-rload');
+    if (rloadEl) rloadEl.textContent = `${(bias.effectiveLoad / 1000).toFixed(2)} kΩ`;
+
+    const avCalcEl = document.getElementById('ce-av-calc');
+    if (avCalcEl) avCalcEl.textContent = `${bias.gain.toFixed(1)} (Inv 180°)`;
 
     const clipBadge = document.getElementById('ce-clipping');
-    if (res.clipped) {
-      clipBadge.textContent = res.clipTop && res.clipBottom ? 'CLIPPED (BOTH RAILS)' :
-                              res.clipTop ? 'CLIPPED (TOP VCC)' : 'CLIPPED (BOTTOM VCE_SAT)';
-      clipBadge.className = 'status-badge clipped';
-    } else {
-      clipBadge.textContent = 'UNCLIPPED (LINEAR)';
-      clipBadge.className = 'status-badge normal';
+    if (clipBadge) {
+      if (res.clipped) {
+        clipBadge.textContent = res.clipTop && res.clipBottom ? 'CLIPPED (BOTH RAILS)' :
+                                res.clipTop ? 'CLIPPED (TOP VCC CEILING)' : 'CLIPPED (BOTTOM SATURATION FLOOR)';
+        clipBadge.className = 'status-badge clipped';
+      } else {
+        clipBadge.textContent = 'UNCLIPPED (LINEAR REGIME)';
+        clipBadge.className = 'status-badge normal';
+      }
     }
 
-    document.getElementById('ce-max-amp').textContent = `±${res.maxUnclippedAmp.toFixed(3)} V`;
-    document.getElementById('ce-measured-gain').textContent = res.measuredGain.toFixed(2);
+    const maxAmpEl = document.getElementById('ce-max-amp');
+    if (maxAmpEl) {
+      maxAmpEl.textContent = res.maxUnclippedAmp < 0.1 
+        ? `±${(res.maxUnclippedAmp * 1000).toFixed(1)} mV`
+        : `±${res.maxUnclippedAmp.toFixed(3)} V`;
+    }
+
+    const measGainEl = document.getElementById('ce-measured-gain');
+    if (measGainEl) measGainEl.textContent = res.measuredGain.toFixed(1);
 
     ceChartInstance.data.labels = res.t.map(ti => (ti * 1000).toFixed(2));
-    ceChartInstance.data.datasets[0].data = res.vin.map(v => v + bias.vb); // biased input display
+    ceChartInstance.data.datasets[0].data = res.vin.map(v => v + bias.vb); // visual input at DC base level
     ceChartInstance.data.datasets[1].data = res.vout;
     ceChartInstance.update('none');
   };
 
+  if (presetSelect) {
+    presetSelect.addEventListener('change', () => {
+      currentPreset = presetSelect.value;
+      if (currentPreset === 'ltspice-12v') {
+        isBypassed = true;
+        if (bypassBtn) {
+          bypassBtn.textContent = 'Emitter Bypass (Ce): ENABLED';
+          bypassBtn.classList.add('active');
+        }
+      } else {
+        isBypassed = false;
+        if (bypassBtn) {
+          bypassBtn.textContent = 'Emitter Bypass (Ce): DISABLED';
+          bypassBtn.classList.remove('active');
+        }
+      }
+      syncControlsForPreset();
+      updateAmp();
+    });
+  }
+
+  if (bypassBtn) {
+    bypassBtn.addEventListener('click', () => {
+      isBypassed = !isBypassed;
+      bypassBtn.textContent = isBypassed 
+        ? 'Emitter Bypass (Ce): ENABLED' 
+        : 'Emitter Bypass (Ce): DISABLED';
+      bypassBtn.classList.toggle('active', isBypassed);
+      syncControlsForPreset();
+      updateAmp();
+    });
+  }
+
   ampSlider.addEventListener('input', updateAmp);
   gainSlider.addEventListener('input', updateAmp);
+
+  syncControlsForPreset();
   updateAmp();
 }
 
@@ -405,20 +524,30 @@ function initNeuronModule() {
   const weights = ['w1', 'w2', 'w3'].map(id => document.getElementById(id));
   const biasInput = document.getElementById('bias');
   const actSelect = document.getElementById('activation-select');
+  const actBadge = document.getElementById('activation-description-badge');
 
   const updateNeuron = () => {
-    const x = inputs.map(el => parseFloat(el.value) || 0);
-    const w = weights.map(el => parseFloat(el.value) || 0);
-    const b = parseFloat(biasInput.value) || 0;
-    const act = actSelect.value;
+    const x = inputs.map(el => (el ? parseFloat(el.value) || 0 : 0));
+    const w = weights.map(el => (el ? parseFloat(el.value) || 0 : 0));
+    const b = biasInput ? parseFloat(biasInput.value) || 0 : 0;
+    const act = actSelect ? actSelect.value : 'sigmoid';
 
     const res = neuron(x, w, b, act);
-    document.getElementById('neuron-z').textContent = res.z.toFixed(4);
-    document.getElementById('neuron-y').textContent = res.y.toFixed(4);
+    const zEl = document.getElementById('neuron-z');
+    const yEl = document.getElementById('neuron-y');
+    if (zEl) zEl.textContent = res.z.toFixed(4);
+    if (yEl) yEl.textContent = res.y.toFixed(4);
+
+    if (actBadge && ACTIVATION_META[act]) {
+      actBadge.textContent = `${ACTIVATION_META[act].name}: ${ACTIVATION_META[act].description}`;
+    }
   };
 
-  [...inputs, ...weights, biasInput, actSelect].forEach(el => {
+  [...inputs, ...weights, biasInput, actSelect].filter(Boolean).forEach(el => {
     el.addEventListener('input', updateNeuron);
+    if (el.tagName === 'SELECT') {
+      el.addEventListener('change', updateNeuron);
+    }
   });
   updateNeuron();
 }
@@ -498,6 +627,59 @@ function initLIFModule() {
 }
 
 /* ============================================================
+ * Modal Lightbox Controller
+ * ============================================================ */
+function initLightboxModal() {
+  const modal = document.getElementById('image-modal');
+  const modalImg = document.getElementById('modal-img');
+  const modalCaption = document.getElementById('modal-caption');
+  const closeBtn = document.getElementById('modal-close-btn');
+
+  if (!modal || !modalImg) return;
+
+  const openModal = (src, caption, alt) => {
+    modalImg.src = src;
+    modalImg.alt = alt || 'Enlarged circuit visual';
+    if (modalCaption) modalCaption.textContent = caption || '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  document.querySelectorAll('[data-lightbox]').forEach(card => {
+    card.addEventListener('click', () => {
+      const src = card.getAttribute('data-lightbox');
+      const caption = card.getAttribute('data-caption');
+      const img = card.querySelector('img');
+      const alt = img ? img.alt : '';
+      openModal(src, caption, alt);
+    });
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) {
+      closeModal();
+    }
+  });
+}
+
+/* ============================================================
  * Module Exports
  * ============================================================ */
 export {
@@ -510,5 +692,6 @@ export {
   initAdderModule,
   initAmpModule,
   initNeuronModule,
-  initLIFModule
+  initLIFModule,
+  initLightboxModal
 };

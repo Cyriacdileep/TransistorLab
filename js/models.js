@@ -165,14 +165,35 @@ export function add4(a, b) {
 }
 
 // ---------------------------------------------------------------
-// 4. Common-emitter amplifier (voltage-divider bias, unbypassed emitter resistor)
+// 4. Common-emitter amplifier (voltage-divider bias, small-signal transconductance & rail clipping)
 // ---------------------------------------------------------------
 export const AMP = {
   VCC: 5, R1: 33e3, R2: 10e3, RC: 4.7e3, RE: 1e3,
   BETA: 100, VBE_ON: 0.7, VCE_SAT: 0.2,
 };
 
-/** DC operating point and the textbook gain -RC/RE. */
+export const AMP_CIRCUITS = {
+  'default-5v': {
+    id: 'default-5v',
+    name: '5V Standard Bench (Degenerated)',
+    VCC: 5, R1: 33e3, R2: 10e3, RC: 4.7e3, RE: 1e3, RL: Infinity,
+    BETA: 100, VBE_ON: 0.7, VCE_SAT: 0.2, bypassed: false
+  },
+  'ltspice-12v': {
+    id: 'ltspice-12v',
+    name: 'LTspice Bench (12V Supply, Bypassed)',
+    VCC: 12, R1: 47e3, R2: 10e3, RC: 4.7e3, RE: 1e3, RL: 10e3,
+    BETA: 100, VBE_ON: 0.7, VCE_SAT: 0.2, bypassed: true
+  }
+};
+
+/**
+ * DC operating point, transconductance (gm), effective load impedance, and voltage gain.
+ * Governed by:
+ *   gm = Ic / Vt (where Vt ≈ 25.85 mV at 300K)
+ *   rL = Rc || RL
+ *   Av = -gm * rL (when emitter bypassed) or -(rL) / (RE + re) (unbypassed)
+ */
 export function ceBias(p = AMP) {
   const vth = (p.VCC * p.R2) / (p.R1 + p.R2);      // Thevenin base voltage
   const rth = (p.R1 * p.R2) / (p.R1 + p.R2);       // Thevenin base resistance
@@ -180,10 +201,30 @@ export function ceBias(p = AMP) {
   const ic = (p.BETA / (p.BETA + 1)) * ie;
   const ve = ie * p.RE;
   const vc = p.VCC - ic * p.RC;
+
+  const VT = 0.02585; // thermal voltage at 300K (~26 mV)
+  const gm = ic > 0 ? ic / VT : 0; // Transconductance in S (A/V)
+  const re = ie > 0 ? VT / ie : Infinity; // dynamic emitter resistance
+  const rl = Number.isFinite(p.RL) && p.RL > 0 ? p.RL : Infinity;
+  const effectiveLoad = Number.isFinite(rl) ? (p.RC * rl) / (p.RC + rl) : p.RC;
+
+  const isBypassed = Boolean(p.bypassed);
+  const gainBypassed = -(gm * effectiveLoad);
+  const gainUnbypassed = -effectiveLoad / (p.RE + (re < Infinity ? re : 0));
+  
+  // Default unbypassed textbook formula matches -Rc/Re for default AMP
+  const gain = isBypassed ? gainBypassed : (p === AMP || !Number.isFinite(rl) ? -p.RC / p.RE : gainUnbypassed);
+
   return {
-    vb: ve + p.VBE_ON, ve, vc, vce: vc - ve, ic,
-    gain: -p.RC / p.RE,
+    vb: ve + p.VBE_ON, ve, vc, vce: vc - ve, ic, ie,
+    gm,                // Transconductance (S)
+    effectiveLoad,     // Effective load impedance (Ohms)
+    re,                // Dynamic emitter resistance (Ohms)
+    gain,              // Dynamic voltage gain Av
+    nominalGain: -p.RC / p.RE,
+    isBypassed,
     region: vc - ve > p.VCE_SAT && ic > 0 ? 'active' : ic > 0 ? 'saturation' : 'cutoff',
+    p
   };
 }
 
@@ -192,37 +233,49 @@ export function ceBias(p = AMP) {
  * amp  = input peak voltage (V)
  * gain = voltage gain magnitude (the output is inverted)
  * The collector cannot rise above VCC (cutoff) or fall below VE + VCE_SAT (saturation),
- * so large inputs clip.
+ * resulting in non-linear waveform distortion known as rail clipping.
  */
-export function ceAmp(amp, gain = Math.abs(ceBias().gain), opts = {}) {
+export function ceAmp(amp, gain = null, opts = {}) {
   checkNumber(amp, 'amp');
-  checkNumber(gain, 'gain');
-  const p = { ...AMP, ...opts.circuit };
+  const p = opts.preset && AMP_CIRCUITS[opts.preset] 
+    ? { ...AMP_CIRCUITS[opts.preset], ...(opts.circuit || {}) }
+    : { ...AMP, ...(opts.circuit || {}) };
+  
+  if (typeof opts.bypassed === 'boolean') {
+    p.bypassed = opts.bypassed;
+  }
+
   const bias = ceBias(p);
+  const effectiveGain = typeof gain === 'number' && Number.isFinite(gain) ? gain : Math.abs(bias.gain);
   const { freq = 1000, cycles = 2, points = 200 } = opts;
   const vq = opts.vq ?? bias.vc;
   const vmax = p.VCC;
-  const vmin = opts.vmin ?? bias.ve + p.VCE_SAT;
+  const vmin = opts.vmin ?? Math.max(0, bias.ve + p.VCE_SAT);
 
   const t = [], vin = [], vout = [];
   let clipTop = false, clipBottom = false;
   for (let i = 0; i < points; i++) {
     const ti = (cycles / freq) * (i / (points - 1));
     const x = amp * Math.sin(2 * Math.PI * freq * ti);
-    let y = vq - gain * x;
-    if (y > vmax) { y = vmax; clipTop = true; }
-    if (y < vmin) { y = vmin; clipBottom = true; }
+    let y = vq - effectiveGain * x;
+    if (y >= vmax) { y = vmax; clipTop = true; }
+    if (y <= vmin) { y = vmin; clipBottom = true; }
     t.push(ti); vin.push(x); vout.push(y);
   }
   const ppIn = Math.max(...vin) - Math.min(...vin);
   const ppOut = Math.max(...vout) - Math.min(...vout);
   return {
-    t, vin, vout, vq, vmax, vmin, gain,
+    t, vin, vout, vq, vmax, vmin,
+    gain: effectiveGain,
+    gm: bias.gm,
+    effectiveLoad: bias.effectiveLoad,
+    bias,
+    circuit: p,
     clipped: clipTop || clipBottom,
-    clipTop,        // output hit VCC: transistor in cutoff
-    clipBottom,     // output hit the floor: transistor saturated
+    clipTop,        // output hit VCC: transistor in cutoff (ceiling)
+    clipBottom,     // output hit saturation limit: transistor in saturation (floor)
     measuredGain: ppIn > 0 ? ppOut / ppIn : 0,
-    maxUnclippedAmp: Math.min(vmax - vq, vq - vmin) / gain,
+    maxUnclippedAmp: effectiveGain > 0 ? Math.min(vmax - vq, vq - vmin) / effectiveGain : 0,
   };
 }
 
@@ -246,6 +299,30 @@ export const ACTIVATIONS = {
   step: z => (z >= 0 ? 1 : 0),
   sigmoid: z => 1 / (1 + Math.exp(-z)),
   relu: z => Math.max(0, z),
+};
+
+export const ACTIVATION_META = {
+  step: {
+    id: 'step',
+    name: 'Step Function (Heaviside)',
+    formula: 'H(z) = 1 \\text{ if } z \\ge 0 \\text{ else } 0',
+    displayFormula: 'H(z) = 1 (z ≥ 0), 0 (z < 0)',
+    description: 'Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.'
+  },
+  sigmoid: {
+    id: 'sigmoid',
+    name: 'Sigmoid Function σ(z)',
+    formula: '\\sigma(z) = \\frac{1}{1 + e^{-z}}',
+    displayFormula: 'σ(z) = 1 / (1 + e^(-z))',
+    description: 'Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.'
+  },
+  relu: {
+    id: 'relu',
+    name: 'Rectified Linear Unit (ReLU)',
+    formula: 'f(z) = \\max(0, z)',
+    displayFormula: 'f(z) = max(0, z)',
+    description: 'Continuous non-linear activation passing positive excitations with zero sub-threshold response.'
+  }
 };
 
 // ---------------------------------------------------------------
@@ -328,6 +405,7 @@ export const Digital = {
 
 export const Analog = {
   AMP,
+  AMP_CIRCUITS,
   ceBias,
   ceAmp
 };
@@ -335,6 +413,7 @@ export const Analog = {
 export const Neural = {
   neuron,
   ACTIVATIONS,
+  ACTIVATION_META,
   lif,
   lifPeriod
 };
@@ -354,10 +433,12 @@ export default {
   fullAdder,
   add4,
   AMP,
+  AMP_CIRCUITS,
   ceBias,
   ceAmp,
   neuron,
   ACTIVATIONS,
+  ACTIVATION_META,
   lif,
   lifPeriod
 };

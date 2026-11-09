@@ -107,6 +107,34 @@
             <canvas id="bjtChart"></canvas>
           </div>
         </div>
+
+        <!-- Asset Showcase: LTspice Inverter Circuit & DC Transfer Curve -->
+        <div class="asset-showcase-section">
+          <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
+          <div class="asset-gallery-grid">
+            <div class="gallery-card" data-lightbox="assets/bjt-inverter-schematic.jpeg" data-caption="LTspice Schematic: BJT Inverter Switch circuit with BC547B NPN transistor, collector pull-up resistor Rc=1kΩ to Vcc=5V, and base current limiting resistor Rb=10kΩ.">
+              <div class="gallery-img-container">
+                <img src="assets/bjt-inverter-schematic.jpeg" alt="LTspice BJT Inverter Schematic" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
+              </div>
+              <div class="gallery-info">
+                <strong>LTspice Schematic: BJT Switch Inverter</strong>
+                <span>BC547B NPN, Vcc=5V, Rb=10kΩ, Rc=1kΩ</span>
+              </div>
+            </div>
+
+            <div class="gallery-card" data-lightbox="assets/bjt-vtc-simulation.jpeg" data-caption="LTspice DC Sweep Simulation (.dc v1 0 5 0.1): Output voltage V(n002) drops sharply as base voltage Vin crosses the Vbe turn-on threshold (0.7 V) and fully clamps in saturation (Vce ≈ 0.2 V).">
+              <div class="gallery-img-container">
+                <img src="assets/bjt-vtc-simulation.jpeg" alt="LTspice BJT VTC Simulation Curve" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Simulation</span>
+              </div>
+              <div class="gallery-info">
+                <strong>LTspice DC Sweep VTC: V(n002) vs Vin</strong>
+                <span>Turn-on threshold at 0.70 V; saturation clamped at 0.20 V</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 1.2 Logic Gates -->
@@ -215,28 +243,111 @@
     <section id="analog" class="module-section">
       <div class="section-header">
         <span class="step-num">Module 02</span>
-        <h2>Analog Electronics: Linear Amplification & Clipping</h2>
+        <h2>Module 2: Analog Common-Emitter Amplifier</h2>
       </div>
 
       <div class="sub-module card">
         <div class="sub-header">
-          <h3>2.1 Common-Emitter Voltage Amplifier</h3>
-          <span class="badge-sub">R1=33kΩ, R2=10kΩ, Rc=4.7kΩ, Re=1kΩ | Gain ≈ -4.7</span>
+          <h3>Title: Transistor Small-Signal Amplification &amp; Non-Linear Rail Clipping</h3>
+          <span class="badge-sub">BJT CE Active-Region Dynamics • Supply Rails: VCC &amp; GND</span>
         </div>
-        <p class="description">
-          When biased in the active region, the common-emitter stage linearly inverts and magnifies small AC signals. Large input swings saturate the collector or force cutoff, driving the waveform against the upper ($V_{CC} = 5\text{ V}$) or lower ($V_E + V_{CE\text{,sat}} \approx 1.2\text{ V}$) supply limits.
-        </p>
 
+        <!-- Explanatory Copy as requested by USER -->
+        <div class="explanatory-copy-box">
+          <p class="copy-lead">
+            The common-emitter (CE) configuration operates as an active-region voltage amplifier, using small-signal base current variations to modulate a significantly larger collector current through the load resistance
+          </p>
+          <div class="key-concepts-grid">
+            <div class="concept-item">
+              <div class="concept-title">
+                <span class="concept-icon">⚡</span>
+                <strong>Voltage Gain (Av)</strong>
+              </div>
+              <p>
+                Governed by the transconductance (gm) of the BJT and the effective load impedance, determining the dynamic scaling factor applied to input signal oscillations.
+              </p>
+              <div class="concept-formula">
+                <code>A_v = -g_m \cdot (R_C \parallel R_L) = -\frac{I_C}{V_T} \cdot (R_C \parallel R_L)</code>
+              </div>
+            </div>
+
+            <div class="concept-item">
+              <div class="concept-title">
+                <span class="concept-icon">📐</span>
+                <strong>Saturation &amp; Cutoff Limits</strong>
+              </div>
+              <p>
+                Physical supply boundaries (VCC and GND) constrain the maximum output excursion. Driving the base beyond linear operating limits forces the collector voltage into saturation or cutoff, resulting in non-linear waveform distortion known as rail clipping.
+              </p>
+              <div class="concept-formula">
+                <code>V_{CE,sat} \le v_{out}(t) \le V_{CC} \quad \implies \text{Cutoff Ceiling / Saturation Floor}</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asset Showcase: LTspice Schematic and Waveform Benchmarks -->
+        <div class="asset-showcase-section">
+          <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
+          <div class="asset-gallery-grid">
+            <div class="gallery-card" data-lightbox="assets/ce-amplifier-schematic.jpeg" data-caption="LTspice Circuit Schematic: Common-Emitter Amplifier with Voltage Divider Bias (V2=12V, R3=47kΩ, R4=10kΩ, R1=4.7kΩ collector load, R2=1kΩ emitter resistor, C2=100µF emitter bypass capacitor, C1=10µF input coupling, C3=10µF output coupling, R5=10kΩ load resistor, BC547B NPN BJT, transient directive .tran 0 5m 0 10u).">
+              <div class="gallery-img-container">
+                <img src="assets/ce-amplifier-schematic.jpeg" alt="LTspice Common-Emitter Amplifier Schematic" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
+              </div>
+              <div class="gallery-info">
+                <strong>LTspice Schematic: Common-Emitter Stage</strong>
+                <span>Vcc=12V, R3=47kΩ, R4=10kΩ, Rc=4.7kΩ, Re=1kΩ, Ce=100µF, RL=10kΩ</span>
+              </div>
+            </div>
+
+            <div class="gallery-card" data-lightbox="assets/ce-input-waveform.jpeg" data-caption="LTspice Input Waveform V(n004): 10 mV peak sinusoidal test excitation at 1 kHz (Period T = 1.0 ms) applied through coupling capacitor C1.">
+              <div class="gallery-img-container">
+                <img src="assets/ce-input-waveform.jpeg" alt="LTspice CE Input Sine Waveform" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Waveform</span>
+              </div>
+              <div class="gallery-info">
+                <strong>LTspice Input: V(n004)</strong>
+                <span>10 mV peak AC signal @ 1 kHz (Period T = 1.0 ms)</span>
+              </div>
+            </div>
+
+            <div class="gallery-card" data-lightbox="assets/ce-output-waveform.jpeg" data-caption="LTspice Output Waveform V(n003): Small-signal amplification yielding ~1.5 V peak inverted output waveform (180° phase inversion, Av ≈ -150) governed by gm · (Rc || RL).">
+              <div class="gallery-img-container">
+                <img src="assets/ce-output-waveform.jpeg" alt="LTspice CE Output Waveform" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Waveform</span>
+              </div>
+              <div class="gallery-info">
+                <strong>LTspice Output: V(n003)</strong>
+                <span>Amplified to ~1.5 V peak (180° phase inversion, Av ≈ -150)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Live Simulation & Oscilloscope -->
         <div class="grid-2col">
           <div class="control-panel">
             <div class="control-group">
-              <label for="amp-slider">Input Amplitude (Peak): <strong id="amp-display">0.20 V</strong></label>
-              <input type="range" id="amp-slider" min="0.05" max="1.50" step="0.05" value="0.20">
+              <label for="ce-preset-select">Circuit Testbench Preset:</label>
+              <select id="ce-preset-select" class="select-input">
+                <option value="ltspice-12v" selected>LTspice Bench (12V Supply, Ce=100µF Bypassed • High Gain)</option>
+                <option value="default-5v">5V Standard Bench (Re Degenerated • Av ≈ -4.7)</option>
+              </select>
+            </div>
+
+            <div class="circuit-switch-row">
+              <button type="button" id="btn-toggle-bypass" class="btn-toggle-bypass active">Emitter Bypass (Ce): ENABLED</button>
             </div>
 
             <div class="control-group">
-              <label for="gain-slider">Voltage Gain Magnitude (|Av|): <strong id="gain-display">4.70</strong></label>
-              <input type="range" id="gain-slider" min="1.0" max="8.0" step="0.1" value="4.70">
+              <label for="amp-slider">Input Amplitude (Peak): <strong id="amp-display">0.010 V (10 mV)</strong></label>
+              <input type="range" id="amp-slider" min="0.005" max="0.100" step="0.005" value="0.010">
+            </div>
+
+            <div class="control-group">
+              <label for="gain-slider">Voltage Gain Magnitude (|Av|): <strong id="gain-display">159.1</strong></label>
+              <input type="range" id="gain-slider" min="1.0" max="250.0" step="1.0" value="159.1">
             </div>
 
             <div class="readout-box">
@@ -245,11 +356,23 @@
                 <span id="ce-vq" class="val">--</span>
               </div>
               <div class="readout-item">
+                <span class="label">Transconductance ($g_m$):</span>
+                <span id="ce-gm" class="val">--</span>
+              </div>
+              <div class="readout-item">
+                <span class="label">Effective Load ($R_C \parallel R_L$):</span>
+                <span id="ce-rload" class="val">--</span>
+              </div>
+              <div class="readout-item">
+                <span class="label">Small-Signal Gain ($A_v$):</span>
+                <span id="ce-av-calc" class="val">--</span>
+              </div>
+              <div class="readout-item">
                 <span class="label">Clipping State:</span>
                 <span id="ce-clipping" class="status-badge normal">Unclipped</span>
               </div>
               <div class="readout-item">
-                <span class="label">Max Unclipped Amplitude:</span>
+                <span class="label">Max Linear Input Amplitude:</span>
                 <span id="ce-max-amp" class="val">--</span>
               </div>
               <div class="readout-item">
@@ -266,110 +389,174 @@
       </div>
     </section>
 
-    <!-- MODULE 3: NEURAL COMPUTATION -->
+    <!-- MODULE 3: NEURAL & BIOPHYSICAL MODELS -->
     <section id="neural" class="module-section">
       <div class="section-header">
         <span class="step-num">Module 03</span>
-        <h2>Neural Models: Artificial & Biophysical Computing</h2>
+        <h2>Module 3: Neural &amp; Biophysical Models</h2>
       </div>
 
-      <!-- 3.1 Artificial Neuron -->
       <div class="sub-module card">
         <div class="sub-header">
-          <h3>3.1 Artificial Perceptron: Dot Product & Activation</h3>
-          <span class="badge-sub">y = f(∑ wᵢxᵢ + b)</span>
+          <h3>Title: Static Artificial Abstractions vs. Biophysical LIF Dynamics</h3>
+          <span class="badge-sub">Static Rate Model vs. Temporal RC Electrodynamics</span>
         </div>
-        <p class="description">
-          The artificial neuron performs an affine transformation (weighted accumulation plus bias) followed by a non-linear activation threshold.
-        </p>
 
-        <div class="perceptron-layout">
-          <div class="neuron-inputs">
-            <div class="weight-row">
-              <span>Input x₁: <input type="number" id="x1" value="1.0" step="0.1" class="num-input"></span>
-              <span>Weight w₁: <input type="number" id="w1" value="0.8" step="0.1" class="num-input"></span>
+        <!-- Explanatory Copy as requested by USER -->
+        <div class="explanatory-copy-box">
+          <p class="copy-lead">
+            This module contrasts rate-based mathematical abstractions with temporal biophysical membrane electrodynamics:
+          </p>
+
+          <div class="models-contrast-grid">
+            <!-- Model A: Artificial Neuron -->
+            <div class="contrast-card artificial-card">
+              <div class="contrast-header">
+                <span class="contrast-icon">🧠</span>
+                <h4>Artificial Neuron (Static Rate Model)</h4>
+              </div>
+              <p class="contrast-desc">
+                Evaluates an affine transformation (z = w^T (x) + b) projected through a deterministic activation function.
+              </p>
+
+              <div class="activation-types-list">
+                <div class="act-type-item">
+                  <strong class="act-name">Step Function:</strong>
+                  <span>Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.</span>
+                  <div class="formula-inline"><code>H(z) = 1 \text{ if } z \ge 0 \text{ else } 0</code></div>
+                </div>
+
+                <div class="act-type-item">
+                  <strong class="act-name">Sigmoid Function:</strong>
+                  <span>Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.</span>
+                  <div class="formula-inline"><code>\sigma(z) = \frac{1}{1 + e^{-z}}</code></div>
+                </div>
+              </div>
             </div>
-            <div class="weight-row">
-              <span>Input x₂: <input type="number" id="x2" value="0.5" step="0.1" class="num-input"></span>
-              <span>Weight w₂: <input type="number" id="w2" value="-0.5" step="0.1" class="num-input"></span>
+
+            <!-- Model B: Leaky Integrate-and-Fire -->
+            <div class="contrast-card biophysical-card">
+              <div class="contrast-header">
+                <span class="contrast-icon">⚡</span>
+                <h4>Leaky Integrate-and-Fire (LIF Model)</h4>
+              </div>
+              <p class="contrast-desc">
+                Models the sub-threshold membrane dynamics of a biological neuron using an equivalent RC circuit. Integrated via Euler steps, the membrane potential (v) continuously dissipates charge through passive leakage while integrating input currents. When potential reaches the threshold voltage (vth), the system fires a discrete action potential and resets to baseline.
+              </p>
+
+              <div class="lif-spec-callout">
+                <div class="lif-spec-item">
+                  <strong>Differential Equation:</strong>
+                  <code>C \frac{dv}{dt} = I(t) - \frac{v}{R}</code>
+                </div>
+                <div class="lif-spec-item">
+                  <strong>Euler Integration Step:</strong>
+                  <code>v(t+\Delta t) = v(t) + \frac{\Delta t}{C}\left(I(t) - \frac{v(t)}{R}\right)</code>
+                </div>
+                <div class="lif-spec-item">
+                  <strong>Threshold Firing &amp; Reset:</strong>
+                  <code>\text{If } v(t) \ge v_{th} \implies \text{Spike Event } \delta(t), \quad v \leftarrow 0\text{ V}</code>
+                </div>
+              </div>
             </div>
-            <div class="weight-row">
-              <span>Input x₃: <input type="number" id="x3" value="0.2" step="0.1" class="num-input"></span>
-              <span>Weight w₃: <input type="number" id="w3" value="1.2" step="0.1" class="num-input"></span>
+          </div>
+        </div>
+
+        <!-- 3.1 Artificial Neuron Interactive Workbench -->
+        <div class="sub-workbench-container" style="margin-top: 1.5rem;">
+          <div class="sub-header">
+            <h4>3.1 Artificial Perceptron: Dot Product &amp; Activation Function</h4>
+            <span class="badge-sub">y = f(w^T x + b)</span>
+          </div>
+
+          <div class="perceptron-layout">
+            <div class="neuron-inputs">
+              <div class="weight-row">
+                <span>Input x₁: <input type="number" id="x1" value="1.0" step="0.1" class="num-input"></span>
+                <span>Weight w₁: <input type="number" id="w1" value="0.8" step="0.1" class="num-input"></span>
+              </div>
+              <div class="weight-row">
+                <span>Input x₂: <input type="number" id="x2" value="0.5" step="0.1" class="num-input"></span>
+                <span>Weight w₂: <input type="number" id="w2" value="-0.5" step="0.1" class="num-input"></span>
+              </div>
+              <div class="weight-row">
+                <span>Input x₃: <input type="number" id="x3" value="0.2" step="0.1" class="num-input"></span>
+                <span>Weight w₃: <input type="number" id="w3" value="1.2" step="0.1" class="num-input"></span>
+              </div>
+              <div class="weight-row">
+                <span>Bias b: <input type="number" id="bias" value="-0.3" step="0.1" class="num-input"></span>
+                <span>Activation: 
+                  <select id="activation-select" class="select-input">
+                    <option value="sigmoid" selected>Sigmoid σ(z)</option>
+                    <option value="step">Step (Threshold 0)</option>
+                    <option value="relu">ReLU</option>
+                  </select>
+                </span>
+              </div>
+              <div id="activation-description-badge" class="act-badge-desc">
+                Sigmoid Function: Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.
+              </div>
             </div>
-            <div class="weight-row">
-              <span>Bias b: <input type="number" id="bias" value="-0.3" step="0.1" class="num-input"></span>
-              <span>Activation: 
-                <select id="activation-select" class="select-input">
-                  <option value="sigmoid" selected>Sigmoid σ(z)</option>
-                  <option value="step">Step (Threshold 0)</option>
-                  <option value="relu">ReLU</option>
+
+            <div class="neuron-display-card">
+              <div class="math-box">
+                <span class="math-title">Affine Transformation (z = w^T x + b):</span>
+                <strong class="math-val" id="neuron-z">0.000</strong>
+              </div>
+              <div class="math-box output-highlight">
+                <span class="math-title">Deterministic Output y = f(z):</span>
+                <strong class="math-val" id="neuron-y">0.000</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.2 Biophysical Leaky Integrate-and-Fire (LIF) Spiking Neuron Workbench -->
+        <div class="sub-workbench-container" style="margin-top: 2rem;">
+          <div class="sub-header">
+            <h4>3.2 Biophysical LIF Spiking Dynamics &amp; Euler Integration</h4>
+            <span class="badge-sub">RC Membrane Electrodynamics • Passive Leakage &amp; Action Potentials</span>
+          </div>
+
+          <div class="grid-2col">
+            <div class="control-panel">
+              <div class="control-group">
+                <label for="lif-rate">Input Pulse Rate: <strong id="lif-rate-disp">50 Hz</strong></label>
+                <input type="range" id="lif-rate" min="10" max="100" step="5" value="50">
+              </div>
+
+              <div class="control-group">
+                <label for="lif-vth">Spike Threshold ($V_{th}$): <strong id="lif-vth-disp">1.00 V</strong></label>
+                <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00">
+              </div>
+
+              <div class="control-group">
+                <label for="lif-mode">Stimulation Mode:</label>
+                <select id="lif-mode" class="select-input">
+                  <option value="pulses" selected>Periodic Current Pulses (100 µA)</option>
+                  <option value="constant">Constant DC Current (20 µA)</option>
                 </select>
-              </span>
-            </div>
-          </div>
-
-          <div class="neuron-display-card">
-            <div class="math-box">
-              <span class="math-title">Net Activation (z):</span>
-              <strong class="math-val" id="neuron-z">0.000</strong>
-            </div>
-            <div class="math-box output-highlight">
-              <span class="math-title">Neuron Output (y):</span>
-              <strong class="math-val" id="neuron-y">0.000</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3.2 Leaky Integrate-and-Fire -->
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>3.2 Biophysical Leaky Integrate-and-Fire (LIF) Spiking Neuron</h3>
-          <span class="badge-sub">C dV/dt = I(t) - V/R | Euler Numerical Integration</span>
-        </div>
-        <p class="description">
-          The neuronal lipid membrane acts as a capacitor with leaky ion channels. When current charging drives the membrane potential above threshold $V_{th}$, a discrete action potential (spike) fires and resets the potential to $0\text{ V}$.
-        </p>
-
-        <div class="grid-2col">
-          <div class="control-panel">
-            <div class="control-group">
-              <label for="lif-rate">Input Pulse Rate: <strong id="lif-rate-disp">50 Hz</strong></label>
-              <input type="range" id="lif-rate" min="10" max="100" step="5" value="50">
-            </div>
-
-            <div class="control-group">
-              <label for="lif-vth">Spike Threshold ($V_{th}$): <strong id="lif-vth-disp">1.00 V</strong></label>
-              <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00">
-            </div>
-
-            <div class="control-group">
-              <label for="lif-mode">Stimulation Mode:</label>
-              <select id="lif-mode" class="select-input">
-                <option value="pulses" selected>Periodic Current Pulses (100 µA)</option>
-                <option value="constant">Constant DC Current (20 µA)</option>
-              </select>
-            </div>
-
-            <div class="readout-box">
-              <div class="readout-item">
-                <span class="label">Membrane Time Constant (τ = RC):</span>
-                <span id="lif-tau" class="val">100 ms</span>
               </div>
-              <div class="readout-item">
-                <span class="label">Spike Count:</span>
-                <span id="lif-spikes" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Firing Rate:</span>
-                <span id="lif-firing-rate" class="val">-- Hz</span>
+
+              <div class="readout-box">
+                <div class="readout-item">
+                  <span class="label">Membrane Time Constant (τ = RC):</span>
+                  <span id="lif-tau" class="val">100 ms</span>
+                </div>
+                <div class="readout-item">
+                  <span class="label">Spike Count:</span>
+                  <span id="lif-spikes" class="val">--</span>
+                </div>
+                <div class="readout-item">
+                  <span class="label">Firing Rate:</span>
+                  <span id="lif-firing-rate" class="val">-- Hz</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="chart-wrapper">
-            <canvas id="lifChart"></canvas>
+            <div class="chart-wrapper">
+              <canvas id="lifChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -416,9 +603,15 @@
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
-              <td><strong>CE Midband Gain</strong></td>
+              <td><strong>CE Midband Gain (Degenerated)</strong></td>
               <td>|Av| ≈ Rc/Re = 4.70</td>
               <td>4.70 (Inverted phase 180°)</td>
+              <td><span class="badge-status match">Verified Match</span></td>
+            </tr>
+            <tr>
+              <td><strong>CE Small-Signal Gain (Bypassed)</strong></td>
+              <td>|Av| = gm · (Rc || RL) ≈ 159.1</td>
+              <td>159.1 (LTspice waveform ~150)</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
@@ -433,6 +626,17 @@
       </div>
     </section>
   </main>
+
+  <!-- Lightbox Modal for Inspection of Circuit Schematics & Simulation Waveforms -->
+  <div id="image-modal" class="modal-backdrop" aria-hidden="true" role="dialog">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="modal-image-wrapper">
+        <img id="modal-img" src="" alt="Circuit Diagram Inspection">
+      </div>
+      <div class="modal-caption" id="modal-caption"></div>
+    </div>
+  </div>
 
   <footer class="footer">
     <p>TransistorLab: From Silicon to Intelligence • Built by samael0-dev</p>
