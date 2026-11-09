@@ -79,7 +79,7 @@
         <div class="grid-2col">
           <div class="control-panel">
             <div class="control-group">
-              <label for="vin-slider">Input Voltage (V<sub>in</sub>): <strong id="vin-display">0.00 V</strong></label>
+              <label for="vin-slider"><span class="label-title">Input Voltage (V<sub>in</sub>):</span> <strong id="vin-display">0.00 V</strong></label>
               <input type="range" id="vin-slider" min="0" max="5" step="0.05" value="0.00">
             </div>
 
@@ -191,7 +191,7 @@
       <div class="sub-module card">
         <div class="sub-header">
           <h3>1.3 Cascaded 4-Bit Binary Arithmetic</h3>
-          <span class="badge-sub">36 NAND Gates • 72 Transistors • 4 Full Adders</span>
+          <span class="badge-sub">36 NAND Gates &bull; 72 Transistors &bull; 4 Full Adders</span>
         </div>
         <p class="description">
           Chaining discrete full-adder cells facilitates multi-bit binary arithmetic. Intermediate carry bits propagate sequentially from LSB (Bit 0) to MSB (Bit 3), demonstrating temporal ripple progression.
@@ -199,7 +199,7 @@
 
         <div class="adder-controls">
           <div class="operand-row">
-            <label>Operand A (0–15):</label>
+            <label>Operand A (0&ndash;15):</label>
             <div class="nibble-group">
               <div class="nibble-selector" id="operand-a-bits">
                 <!-- 4 bit buttons -->
@@ -209,7 +209,7 @@
           </div>
 
           <div class="operand-row">
-            <label>Operand B (0–15):</label>
+            <label>Operand B (0&ndash;15):</label>
             <div class="nibble-group">
               <div class="nibble-selector" id="operand-b-bits">
                 <!-- 4 bit buttons -->
@@ -341,12 +341,12 @@
             </div>
 
             <div class="control-group">
-              <label for="amp-slider">Input Amplitude (Peak): <strong id="amp-display">0.010 V (10 mV)</strong></label>
+              <label for="amp-slider"><span class="label-title">Input Amplitude (Peak):</span> <strong id="amp-display">0.010 V (10 mV)</strong></label>
               <input type="range" id="amp-slider" min="0.005" max="0.100" step="0.005" value="0.010">
             </div>
 
             <div class="control-group">
-              <label for="gain-slider">Voltage Gain Magnitude (|A<sub>v</sub>|): <strong id="gain-display">159.1</strong></label>
+              <label for="gain-slider"><span class="label-title">Voltage Gain Magnitude (|A<sub>v</sub>|):</span> <strong id="gain-display">159.1</strong></label>
               <input type="range" id="gain-slider" min="1.0" max="250.0" step="1.0" value="159.1">
             </div>
 
@@ -521,12 +521,12 @@
           <div class="grid-2col">
             <div class="control-panel">
               <div class="control-group">
-                <label for="lif-rate">Input Pulse Rate: <strong id="lif-rate-disp">50 Hz</strong></label>
+                <label for="lif-rate"><span class="label-title">Input Pulse Rate:</span> <strong id="lif-rate-disp">50 Hz</strong></label>
                 <input type="range" id="lif-rate" min="10" max="100" step="5" value="50">
               </div>
 
               <div class="control-group">
-                <label for="lif-vth">Spike Threshold (V<sub>th</sub>): <strong id="lif-vth-disp">1.00 V</strong></label>
+                <label for="lif-vth"><span class="label-title">Spike Threshold (V<sub>th</sub>):</span> <strong id="lif-vth-disp">1.00 V</strong></label>
                 <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00">
               </div>
 

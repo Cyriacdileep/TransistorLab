@@ -313,7 +313,16 @@ sup {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.5rem;
+}
+
+.control-group label .label-title,
+.control-group label > span:first-child {
+  display: inline;
+}
+
+.control-group label strong {
+  margin-left: auto;
 }
 
 input[type="range"] {
