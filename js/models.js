@@ -305,21 +305,21 @@ export const ACTIVATION_META = {
   step: {
     id: 'step',
     name: 'Step Function (Heaviside)',
-    formula: 'H(z) = 1 \\text{ if } z \\ge 0 \\text{ else } 0',
+    formula: 'H(z) = 1 (if z ≥ 0), 0 (if z < 0)',
     displayFormula: 'H(z) = 1 (z ≥ 0), 0 (z < 0)',
     description: 'Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.'
   },
   sigmoid: {
     id: 'sigmoid',
     name: 'Sigmoid Function σ(z)',
-    formula: '\\sigma(z) = \\frac{1}{1 + e^{-z}}',
-    displayFormula: 'σ(z) = 1 / (1 + e^(-z))',
+    formula: 'σ(z) = 1 / (1 + e^-z)',
+    displayFormula: 'σ(z) = 1 / (1 + e^-z)',
     description: 'Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.'
   },
   relu: {
     id: 'relu',
     name: 'Rectified Linear Unit (ReLU)',
-    formula: 'f(z) = \\max(0, z)',
+    formula: 'f(z) = max(0, z)',
     displayFormula: 'f(z) = max(0, z)',
     description: 'Continuous non-linear activation passing positive excitations with zero sub-threshold response.'
   }

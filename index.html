@@ -69,17 +69,17 @@
       <!-- 1.1 BJT Switch -->
       <div class="sub-module card">
         <div class="sub-header">
-          <h3>1.1 BJT Switching Dynamics & Transfer Curve</h3>
+          <h3>1.1 BJT Switching Dynamics &amp; Transfer Curve</h3>
           <span class="badge-sub">Piecewise Model: Vcc=5V, Rb=10kΩ, Rc=1kΩ, β=100</span>
         </div>
         <p class="description">
-          Modulating the base-emitter terminal voltage ($V_{in}$) reveals discrete operational regimes: below 0.7 V the transistor is in high-impedance cutoff ($V_{out} = 5\text{ V}$); above 0.7 V it enters active conduction until saturating at $V_{CE} \approx 0.2\text{ V}$ ($V_{in} \ge 1.18\text{ V}$).
+          Modulating the base-emitter terminal voltage (V<sub>in</sub>) reveals discrete operational regimes: below 0.7 V the transistor is in high-impedance cutoff (V<sub>out</sub> = 5.00 V); above 0.7 V it enters active conduction until saturating at V<sub>CE</sub> &approx; 0.20 V (V<sub>in</sub> &ge; 1.18 V).
         </p>
 
         <div class="grid-2col">
           <div class="control-panel">
             <div class="control-group">
-              <label for="vin-slider">Input Voltage ($V_{in}$): <strong id="vin-display">0.00 V</strong></label>
+              <label for="vin-slider">Input Voltage (V<sub>in</sub>): <strong id="vin-display">0.00 V</strong></label>
               <input type="range" id="vin-slider" min="0" max="5" step="0.05" value="0.00">
             </div>
 
@@ -89,15 +89,15 @@
                 <span id="bjt-region" class="status-badge cutoff">Cutoff</span>
               </div>
               <div class="readout-item">
-                <span class="label">Output Voltage ($V_{out}$):</span>
+                <span class="label">Output Voltage (V<sub>out</sub>):</span>
                 <span id="bjt-vout" class="val">5.00 V</span>
               </div>
               <div class="readout-item">
-                <span class="label">Base Current ($I_B$):</span>
+                <span class="label">Base Current (I<sub>B</sub>):</span>
                 <span id="bjt-ib" class="val">0.00 µA</span>
               </div>
               <div class="readout-item">
-                <span class="label">Collector Current ($I_C$):</span>
+                <span class="label">Collector Current (I<sub>C</sub>):</span>
                 <span id="bjt-ic" class="val">0.00 mA</span>
               </div>
             </div>
@@ -261,13 +261,13 @@
             <div class="concept-item">
               <div class="concept-title">
                 <span class="concept-icon">⚡</span>
-                <strong>Voltage Gain (Av)</strong>
+                <strong>Voltage Gain (A<sub>v</sub>)</strong>
               </div>
               <p>
-                Governed by the transconductance (gm) of the BJT and the effective load impedance, determining the dynamic scaling factor applied to input signal oscillations.
+                Governed by the transconductance (g<sub>m</sub>) of the BJT and the effective load impedance, determining the dynamic scaling factor applied to input signal oscillations.
               </p>
               <div class="concept-formula">
-                <code>A_v = -g_m \cdot (R_C \parallel R_L) = -\frac{I_C}{V_T} \cdot (R_C \parallel R_L)</code>
+                <code>A<sub>v</sub> = &minus;g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>) = &minus;(I<sub>C</sub> / V<sub>T</sub>) &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>)</code>
               </div>
             </div>
 
@@ -277,10 +277,10 @@
                 <strong>Saturation &amp; Cutoff Limits</strong>
               </div>
               <p>
-                Physical supply boundaries (VCC and GND) constrain the maximum output excursion. Driving the base beyond linear operating limits forces the collector voltage into saturation or cutoff, resulting in non-linear waveform distortion known as rail clipping.
+                Physical supply boundaries (V<sub>CC</sub> and GND) constrain the maximum output excursion. Driving the base beyond linear operating limits forces the collector voltage into saturation or cutoff, resulting in non-linear waveform distortion known as rail clipping.
               </p>
               <div class="concept-formula">
-                <code>V_{CE,sat} \le v_{out}(t) \le V_{CC} \quad \implies \text{Cutoff Ceiling / Saturation Floor}</code>
+                <code>V<sub>CE,sat</sub> &le; v<sub>out</sub>(t) &le; V<sub>CC</sub> &nbsp;&rarr;&nbsp; Cutoff Ceiling / Saturation Floor</code>
               </div>
             </div>
           </div>
@@ -346,25 +346,25 @@
             </div>
 
             <div class="control-group">
-              <label for="gain-slider">Voltage Gain Magnitude (|Av|): <strong id="gain-display">159.1</strong></label>
+              <label for="gain-slider">Voltage Gain Magnitude (|A<sub>v</sub>|): <strong id="gain-display">159.1</strong></label>
               <input type="range" id="gain-slider" min="1.0" max="250.0" step="1.0" value="159.1">
             </div>
 
             <div class="readout-box">
               <div class="readout-item">
-                <span class="label">DC Q-Point Collector ($V_Q$):</span>
+                <span class="label">DC Q-Point Collector (V<sub>Q</sub>):</span>
                 <span id="ce-vq" class="val">--</span>
               </div>
               <div class="readout-item">
-                <span class="label">Transconductance ($g_m$):</span>
+                <span class="label">Transconductance (g<sub>m</sub>):</span>
                 <span id="ce-gm" class="val">--</span>
               </div>
               <div class="readout-item">
-                <span class="label">Effective Load ($R_C \parallel R_L$):</span>
+                <span class="label">Effective Load (R<sub>C</sub> &parallel; R<sub>L</sub>):</span>
                 <span id="ce-rload" class="val">--</span>
               </div>
               <div class="readout-item">
-                <span class="label">Small-Signal Gain ($A_v$):</span>
+                <span class="label">Small-Signal Gain (A<sub>v</sub>):</span>
                 <span id="ce-av-calc" class="val">--</span>
               </div>
               <div class="readout-item">
@@ -416,20 +416,20 @@
                 <h4>Artificial Neuron (Static Rate Model)</h4>
               </div>
               <p class="contrast-desc">
-                Evaluates an affine transformation (z = w^T (x) + b) projected through a deterministic activation function.
+                Evaluates an affine transformation (z = w<sup>T</sup>x + b) projected through a deterministic activation function.
               </p>
 
               <div class="activation-types-list">
                 <div class="act-type-item">
                   <strong class="act-name">Step Function:</strong>
                   <span>Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.</span>
-                  <div class="formula-inline"><code>H(z) = 1 \text{ if } z \ge 0 \text{ else } 0</code></div>
+                  <div class="formula-inline"><code>H(z) = 1 &nbsp;(if z &ge; 0), &nbsp; 0 &nbsp;(if z &lt; 0)</code></div>
                 </div>
 
                 <div class="act-type-item">
                   <strong class="act-name">Sigmoid Function:</strong>
                   <span>Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.</span>
-                  <div class="formula-inline"><code>\sigma(z) = \frac{1}{1 + e^{-z}}</code></div>
+                  <div class="formula-inline"><code>&sigma;(z) = 1 / (1 + e<sup>&minus;z</sup>)</code></div>
                 </div>
               </div>
             </div>
@@ -441,21 +441,21 @@
                 <h4>Leaky Integrate-and-Fire (LIF Model)</h4>
               </div>
               <p class="contrast-desc">
-                Models the sub-threshold membrane dynamics of a biological neuron using an equivalent RC circuit. Integrated via Euler steps, the membrane potential (v) continuously dissipates charge through passive leakage while integrating input currents. When potential reaches the threshold voltage (vth), the system fires a discrete action potential and resets to baseline.
+                Models the sub-threshold membrane dynamics of a biological neuron using an equivalent RC circuit. Integrated via Euler steps, the membrane potential (v) continuously dissipates charge through passive leakage while integrating input currents. When potential reaches the threshold voltage (v<sub>th</sub>), the system fires a discrete action potential and resets to baseline.
               </p>
 
               <div class="lif-spec-callout">
                 <div class="lif-spec-item">
                   <strong>Differential Equation:</strong>
-                  <code>C \frac{dv}{dt} = I(t) - \frac{v}{R}</code>
+                  <code>C &middot; (dv/dt) = I(t) &minus; (v / R)</code>
                 </div>
                 <div class="lif-spec-item">
                   <strong>Euler Integration Step:</strong>
-                  <code>v(t+\Delta t) = v(t) + \frac{\Delta t}{C}\left(I(t) - \frac{v(t)}{R}\right)</code>
+                  <code>v(t + &Delta;t) = v(t) + (&Delta;t / C) &middot; [I(t) &minus; v(t) / R]</code>
                 </div>
                 <div class="lif-spec-item">
                   <strong>Threshold Firing &amp; Reset:</strong>
-                  <code>\text{If } v(t) \ge v_{th} \implies \text{Spike Event } \delta(t), \quad v \leftarrow 0\text{ V}</code>
+                  <code>If v(t) &ge; v<sub>th</sub> &nbsp;&rarr;&nbsp; Spike Event &delta;(t), &nbsp; v &larr; 0 V</code>
                 </div>
               </div>
             </div>
@@ -466,7 +466,7 @@
         <div class="sub-workbench-container" style="margin-top: 1.5rem;">
           <div class="sub-header">
             <h4>3.1 Artificial Perceptron: Dot Product &amp; Activation Function</h4>
-            <span class="badge-sub">y = f(w^T x + b)</span>
+            <span class="badge-sub">y = f(w<sup>T</sup>x + b)</span>
           </div>
 
           <div class="perceptron-layout">
@@ -500,7 +500,7 @@
 
             <div class="neuron-display-card">
               <div class="math-box">
-                <span class="math-title">Affine Transformation (z = w^T x + b):</span>
+                <span class="math-title">Affine Transformation (z = w<sup>T</sup>x + b):</span>
                 <strong class="math-val" id="neuron-z">0.000</strong>
               </div>
               <div class="math-box output-highlight">
@@ -526,7 +526,7 @@
               </div>
 
               <div class="control-group">
-                <label for="lif-vth">Spike Threshold ($V_{th}$): <strong id="lif-vth-disp">1.00 V</strong></label>
+                <label for="lif-vth">Spike Threshold (V<sub>th</sub>): <strong id="lif-vth-disp">1.00 V</strong></label>
                 <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00">
               </div>
 
@@ -586,37 +586,37 @@
           <tbody>
             <tr>
               <td><strong>BJT Inverter Turn-on</strong></td>
-              <td>Vin = 0.70 V</td>
+              <td>V<sub>in</sub> = 0.70 V</td>
               <td>0.70 V (cutoff to active)</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
               <td><strong>BJT Inverter Saturation</strong></td>
-              <td>Vin ≈ 1.18 V (Vce = 0.20 V)</td>
+              <td>V<sub>in</sub> &approx; 1.18 V (V<sub>CE</sub> = 0.20 V)</td>
               <td>1.18 V (saturation clamped)</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
               <td><strong>4-Bit Adder (36 NAND)</strong></td>
-              <td>Truth table addition (0-30 range)</td>
+              <td>Truth table addition (0&ndash;30 range)</td>
               <td>Bit-exact NAND propagation</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
               <td><strong>CE Midband Gain (Degenerated)</strong></td>
-              <td>|Av| ≈ Rc/Re = 4.70</td>
-              <td>4.70 (Inverted phase 180°)</td>
+              <td>|A<sub>v</sub>| &approx; R<sub>C</sub> / R<sub>E</sub> = 4.70</td>
+              <td>4.70 (Inverted phase 180&deg;)</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
               <td><strong>CE Small-Signal Gain (Bypassed)</strong></td>
-              <td>|Av| = gm · (Rc || RL) ≈ 159.1</td>
-              <td>159.1 (LTspice waveform ~150)</td>
+              <td>|A<sub>v</sub>| = g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>) &approx; 159.1</td>
+              <td>159.1 (LTspice waveform &approx; 150)</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
             <tr>
               <td><strong>LIF Constant Firing Period</strong></td>
-              <td>T = RC · ln(IR / (IR - Vth))</td>
+              <td>T = RC &middot; ln[IR / (IR &minus; V<sub>th</sub>)]</td>
               <td>Euler numerical integration</td>
               <td><span class="badge-status match">Verified Match</span></td>
             </tr>
