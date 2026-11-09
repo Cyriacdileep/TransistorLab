@@ -7,112 +7,151 @@
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="alternate icon" href="assets/favicon.ico">
   <link rel="stylesheet" href="css/style.css">
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Local Offline Chart.js 4.4.1 -->
+  <script src="js/vendor/chart.umd.min.js"></script>
 </head>
-<body class="dark-theme">
-  <!-- Header / Navigation -->
+<body>
+  <!-- Sticky Engineering Navigation Bar -->
   <header class="navbar">
     <div class="nav-brand">
       <img src="assets/favicon.png" alt="TransistorLab Logo" class="nav-logo">
       <span class="title">TransistorLab</span>
-      <span class="badge">Silicon to Intelligence</span>
+      <span class="badge">Datasheet &bull; v2.0</span>
     </div>
-    <nav class="nav-links">
-      <a href="#overview">Overview</a>
-      <a href="#digital">1. Digital</a>
-      <a href="#analog">2. Analog</a>
-      <a href="#neural">3. Neural</a>
-      <a href="#validation">Validation</a>
-    </nav>
+    <div class="nav-actions">
+      <nav class="nav-links" id="main-nav">
+        <a href="#overview" class="active">Overview</a>
+        <a href="#digital">1. Digital</a>
+        <a href="#analog">2. Analog</a>
+        <a href="#neural">3. Neural</a>
+        <a href="#validation">Validation</a>
+      </nav>
+      <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light or dark theme">
+        <span id="theme-icon">◐</span> <span id="theme-text">Theme</span>
+      </button>
+    </div>
   </header>
 
   <main class="container">
-    <!-- Hero / Architectural Foundation Section -->
-    <section id="overview" class="card hero-card">
-      <div class="hero-content">
+    <!-- Hero / Architecture Foundation Section -->
+    <section id="overview" class="hero-section">
+      <div class="hero-header">
         <h1>TransistorLab: From Silicon to Intelligence</h1>
-        <p class="tagline">
-          <em>"Transistors switch, gates compute, and adders perform arithmetic; the same transistor can amplify signals, while mathematical models demonstrate neuron behaviour."</em>
+        <p class="hero-thesis">
+          "Transistors switch, gates compute, adders do arithmetic; the same transistor amplifies and can mimic a neuron"
         </p>
-        <p class="foundation-text">
-          Modern computing architectures originate from the precise manipulation of solid-state semiconductor physics. By leveraging the fundamental threshold characteristics of a single transistor, we synthesize elementary logic gates that aggregate to execute binary arithmetic. Remarkably, this exact physical substrate—when appropriately biased—operates interchangeably as a linear signal amplifier and a biological neuron emulator.
+        <p class="hero-body">
+          Computing hardware arises from solid-state semiconductor physics. By modulating base-emitter carrier injection in a single bipolar junction transistor (BJT), we construct elementary logic gates that cascade into multi-bit binary adders. Biased in its active region, that identical physical junction operates as a small-signal analog amplifier or emulates leaky integrate-and-fire neuro-electrodynamics.
         </p>
       </div>
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <span class="metric-val">3</span>
-          <span class="metric-label">Core Modules</span>
+
+      <!-- Architectural Pathway Diagram -->
+      <nav class="pathway-diagram" aria-label="Architectural Roadmap">
+        <div class="pathway-group">
+          <span class="pathway-domain">Digital:</span>
+          <a href="#bjt-switch" class="pathway-step">Switch</a>
+          <span class="pathway-arrow">&rarr;</span>
+          <a href="#gate-module" class="pathway-step">Gate</a>
+          <span class="pathway-arrow">&rarr;</span>
+          <a href="#adder-module" class="pathway-step">Adder</a>
         </div>
-        <div class="metric-card">
+        <span class="pathway-divider">|</span>
+        <div class="pathway-group">
+          <span class="pathway-domain">Analog:</span>
+          <a href="#analog" class="pathway-step">Amplifier</a>
+        </div>
+        <span class="pathway-divider">|</span>
+        <div class="pathway-group">
+          <span class="pathway-domain">Neural:</span>
+          <a href="#neural" class="pathway-step">Neuron</a>
+        </div>
+      </nav>
+
+      <!-- Key Hardware Metrics (3 stats max) -->
+      <div class="hero-stats">
+        <div class="stat-item">
           <span class="metric-val">72</span>
           <span class="metric-label">Adder Transistors</span>
         </div>
-        <div class="metric-card">
-          <span class="metric-val">100%</span>
-          <span class="metric-label">Client-Side JS</span>
+        <div class="stat-item">
+          <span class="metric-val">0.70 V</span>
+          <span class="metric-label">V<sub>BE</sub> Turn-On Threshold</span>
         </div>
-        <div class="metric-card">
-          <span class="metric-val">0.7 V</span>
-          <span class="metric-label">Turn-on Threshold</span>
+        <div class="stat-item">
+          <span class="metric-val">159.1</span>
+          <span class="metric-label">Bypassed CE Voltage Gain</span>
         </div>
       </div>
     </section>
 
     <!-- MODULE 1: DIGITAL ELECTRONICS -->
     <section id="digital" class="module-section">
-      <div class="section-header">
-        <span class="step-num">Module 01</span>
-        <h2>Digital Electronics: From Switching to Arithmetic</h2>
+      <div class="section-intro-block">
+        <div class="section-badge-row">
+          <span class="module-badge">Module 01</span>
+          <h2>Digital: Switching to Arithmetic</h2>
+        </div>
+        <p class="section-intro-text">
+          Transistors function as electronically controlled switches. Modulating base-emitter voltage transitions a discrete BJT between high-impedance cutoff and low-impedance saturation, forming the substrate for Boolean logic gates and cascaded ripple adders.
+        </p>
       </div>
 
-      <!-- 1.1 BJT Switch -->
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>1.1 BJT Switching Dynamics &amp; Transfer Curve</h3>
-          <span class="badge-sub">Piecewise Model: Vcc=5V, Rb=10kΩ, Rc=1kΩ, β=100</span>
+      <!-- 1.1 BJT Switch & Transfer Curve -->
+      <div id="bjt-switch" class="submodule-block">
+        <div class="submodule-intro">
+          <h3>1.1 BJT Switch &amp; DC Transfer Characteristic</h3>
+          <p>
+            Varying base input voltage V<sub>in</sub> drives the BC547B through three distinct physical regimes: cutoff (V<sub>in</sub> &le; 0.70 V), active linear conduction, and saturation (V<sub>in</sub> &ge; 1.18 V) where V<sub>CE</sub> clamps near 0.20 V.
+          </p>
         </div>
-        <p class="description">
-          Modulating the base-emitter terminal voltage (V<sub>in</sub>) reveals discrete operational regimes: below 0.7 V the transistor is in high-impedance cutoff (V<sub>out</sub> = 5.00 V); above 0.7 V it enters active conduction until saturating at V<sub>CE</sub> &approx; 0.20 V (V<sub>in</sub> &ge; 1.18 V).
-        </p>
 
-        <div class="grid-2col">
-          <div class="control-panel">
-            <div class="control-group">
-              <label for="vin-slider"><span class="label-title">Input Voltage (V<sub>in</sub>):</span> <strong id="vin-display">0.00 V</strong></label>
-              <input type="range" id="vin-slider" min="0" max="5" step="0.05" value="0.00">
+        <div class="instrument-panel">
+          <div class="instrument-workbench">
+            <div class="control-panel">
+              <div class="control-group">
+                <label for="vin-slider">
+                  <span class="label-title">Input Voltage (V<sub>in</sub>):</span>
+                  <strong id="vin-display">0.00 V</strong>
+                </label>
+                <input type="range" id="vin-slider" min="0" max="5" step="0.05" value="0.00" aria-label="Input Voltage Vin">
+              </div>
             </div>
 
-            <div class="readout-box">
-              <div class="readout-item">
-                <span class="label">Operating Region:</span>
-                <span id="bjt-region" class="status-badge cutoff">Cutoff</span>
+            <div class="chart-wrapper">
+              <div class="chart-mini-header">
+                <span class="chart-tag output-tag">CH2: Vout (Collector Voltage [V])</span>
+                <span class="chart-subtag">Sweep: 0.00 to 5.00 V &bull; VCC = 5 V</span>
               </div>
-              <div class="readout-item">
-                <span class="label">Output Voltage (V<sub>out</sub>):</span>
-                <span id="bjt-vout" class="val">5.00 V</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Base Current (I<sub>B</sub>):</span>
-                <span id="bjt-ib" class="val">0.00 µA</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Collector Current (I<sub>C</sub>):</span>
-                <span id="bjt-ic" class="val">0.00 mA</span>
-              </div>
+              <canvas id="bjtChart" aria-label="BJT Transfer Curve Plot"></canvas>
             </div>
           </div>
 
-          <div class="chart-wrapper">
-            <canvas id="bjtChart"></canvas>
+          <!-- Digital Readouts Beneath -->
+          <div class="readout-box">
+            <div class="readout-item">
+              <span class="label">Operating Region:</span>
+              <span id="bjt-region" class="status-badge cutoff">Cutoff</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Output Voltage (V<sub>out</sub>):</span>
+              <span id="bjt-vout" class="val">5.00 V</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Base Current (I<sub>B</sub>):</span>
+              <span id="bjt-ib" class="val">0.0 µA</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Collector Current (I<sub>C</sub>):</span>
+              <span id="bjt-ic" class="val">0.00 mA</span>
+            </div>
           </div>
         </div>
 
-        <!-- Asset Showcase: LTspice Inverter Circuit & DC Transfer Curve -->
+        <!-- Hardware & LTspice Verification -->
         <div class="asset-showcase-section">
           <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
           <div class="asset-gallery-grid">
-            <div class="gallery-card" data-lightbox="assets/bjt-inverter-schematic.jpeg" data-caption="LTspice Schematic: BJT Inverter Switch circuit with BC547B NPN transistor, collector pull-up resistor Rc=1kΩ to Vcc=5V, and base current limiting resistor Rb=10kΩ.">
+            <div class="gallery-card" data-lightbox="assets/bjt-inverter-schematic.jpeg" data-caption="LTspice Schematic: BJT Inverter Switch with BC547B NPN transistor, collector pull-up resistor Rc=1kΩ to Vcc=5V, and base current limiting resistor Rb=10kΩ.">
               <div class="gallery-img-container">
                 <img src="assets/bjt-inverter-schematic.jpeg" alt="LTspice BJT Inverter Schematic" class="gallery-thumb">
                 <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
@@ -123,165 +162,258 @@
               </div>
             </div>
 
-            <div class="gallery-card" data-lightbox="assets/bjt-vtc-simulation.jpeg" data-caption="LTspice DC Sweep Simulation (.dc v1 0 5 0.1): Output voltage V(n002) drops sharply as base voltage Vin crosses the Vbe turn-on threshold (0.7 V) and fully clamps in saturation (Vce ≈ 0.2 V).">
+            <div class="gallery-card" data-lightbox="assets/bjt-vtc-simulation.jpeg" data-caption="LTspice DC sweep shows BC547B turning on gradually around 0.5–0.6 V and clamping into saturation near Vin ≈ 0.9 V, where Vce drops to ~0.05–0.2 V.">
               <div class="gallery-img-container">
                 <img src="assets/bjt-vtc-simulation.jpeg" alt="LTspice BJT VTC Simulation Curve" class="gallery-thumb">
                 <span class="gallery-zoom-badge">🔍 Zoom Simulation</span>
               </div>
               <div class="gallery-info">
                 <strong>LTspice DC Sweep VTC: V(n002) vs Vin</strong>
-                <span>Turn-on threshold at 0.70 V; saturation clamped at 0.20 V</span>
+                <span>Turn-on begins gradually at ~0.5–0.6 V; saturation clamps near Vin ≈ 0.9 V</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 1.2 Logic Gates -->
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>1.2 Topologies of Boolean Computation</h3>
-          <span class="badge-sub">Resistor-Transistor Logic (RTL)</span>
-        </div>
-        <p class="description">
-          A single inverting BJT topology implements a NOT gate, series-configured channels yield conditional NAND logic, and parallel arrangements realize NOR operations. Observe the real-time physical conduction state of each semiconductor channel.
-        </p>
-
-        <div class="gate-selector-bar">
-          <label>Select Gate:</label>
-          <div class="btn-group" id="gate-tabs">
-            <button class="tab-btn active" data-gate="NOT">NOT Gate</button>
-            <button class="tab-btn" data-gate="NAND">NAND Gate</button>
-            <button class="tab-btn" data-gate="NOR">NOR Gate</button>
-          </div>
+      <!-- 1.2 Logic Gates (RTL) -->
+      <div id="gate-module" class="submodule-block">
+        <div class="submodule-intro">
+          <h3>1.2 Logic Gates: Resistor-Transistor Logic (RTL)</h3>
+          <p>
+            Discrete BJTs combine to form primitive logic gates: a single transistor pulls the output low when driven (NOT), two series transistors require both bases active to complete the ground path (NAND), and two parallel transistors pull low if either conducts (NOR).
+          </p>
         </div>
 
-        <div class="gate-grid">
-          <div class="gate-controls">
-            <div class="input-toggles">
-              <div class="toggle-control" id="input-a-container">
-                <label>Input A:</label>
-                <button id="btn-toggle-a" class="bit-toggle off">0 (0V)</button>
-              </div>
-              <div class="toggle-control" id="input-b-container">
-                <label>Input B:</label>
-                <button id="btn-toggle-b" class="bit-toggle off">0 (0V)</button>
-              </div>
-            </div>
-
-            <div class="gate-result-box">
-              <span class="gate-formula" id="gate-formula">Y = NOT(A)</span>
-              <div class="output-display">
-                <span class="out-bit" id="gate-out-bit">1</span>
-                <span class="out-voltage" id="gate-out-volt">Vout = 5.00 V</span>
-              </div>
+        <div class="instrument-panel">
+          <div class="gate-selector-bar">
+            <label>Select Topology:</label>
+            <div class="btn-group" id="gate-tabs">
+              <button type="button" class="tab-btn active" data-gate="NOT">NOT Gate (1 Transistor)</button>
+              <button type="button" class="tab-btn" data-gate="NAND">NAND Gate (2 Series)</button>
+              <button type="button" class="tab-btn" data-gate="NOR">NOR Gate (2 Parallel)</button>
             </div>
           </div>
 
-          <div class="transistors-visualizer">
-            <h4>Physical Semiconductor Channels</h4>
-            <div class="transistor-nodes" id="transistor-nodes">
-              <!-- Dynamically populated -->
+          <div class="gate-interactive-workbench">
+            <div class="gate-controls">
+              <div class="input-toggles">
+                <div class="toggle-control" id="input-a-container">
+                  <label for="btn-toggle-a">Input A:</label>
+                  <button type="button" id="btn-toggle-a" class="bit-toggle off">0 (0V)</button>
+                </div>
+                <div class="toggle-control" id="input-b-container">
+                  <label for="btn-toggle-b">Input B:</label>
+                  <button type="button" id="btn-toggle-b" class="bit-toggle off">0 (0V)</button>
+                </div>
+              </div>
+
+              <div class="gate-result-box">
+                <span class="gate-formula" id="gate-formula">Y = NOT(0)</span>
+                <div class="output-display">
+                  <span class="out-bit" id="gate-out-bit">1</span>
+                  <span class="out-voltage" id="gate-out-volt">Vout = 5.00 V</span>
+                </div>
+              </div>
+
+              <div class="transistor-status-list">
+                <label style="font-size:0.75rem; text-transform:uppercase; color:var(--text-dim); font-family:var(--font-mono);">Transistor States:</label>
+                <div class="transistor-nodes" id="transistor-nodes">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Inline SVG Circuit Schematic & Live Truth Table -->
+            <div class="gate-circuit-viewport">
+              <div class="svg-circuit-box">
+                <div id="gate-schematic-svg" aria-label="Dynamic Gate Circuit Schematic">
+                  <!-- Dynamically rendered by app.js -->
+                </div>
+              </div>
+
+              <div class="truth-table-box">
+                <h4>Truth Table &amp; Operating State</h4>
+                <div id="gate-truth-table-container">
+                  <!-- Dynamically populated truth table with active row highlighting -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference Hardware Schematic Showcase (Including User's RTL NAND Schematic) -->
+        <div class="asset-showcase-section">
+          <h4 class="showcase-title">Hardware Schematic Verification</h4>
+          <div class="asset-gallery-grid">
+            <div class="gallery-card" data-lightbox="assets/rtl-nand-schematic.jpg" data-caption="RTL NAND Gate Schematic (TransistorLab): Q1 and Q2 in series. OUT is pulled low (Vce,sat) only when both inputs A and B are driven high (+5V). R3=1kΩ collector pull-up, R1=R2=10kΩ base current limiting.">
+              <div class="gallery-img-container">
+                <img src="assets/rtl-nand-schematic.jpg" alt="RTL NAND Gate Transistor Schematic" class="gallery-thumb">
+                <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
+              </div>
+              <div class="gallery-info">
+                <strong>RTL NAND Gate: Transistor Series Circuit</strong>
+                <span>BC547B Q1 &amp; Q2 in series &bull; R3=1k&Omega; pull-up, R1=R2=10k&Omega; base</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 1.3 4-Bit Ripple Carry Adder -->
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>1.3 Cascaded 4-Bit Binary Arithmetic</h3>
-          <span class="badge-sub">36 NAND Gates &bull; 72 Transistors &bull; 4 Full Adders</span>
+      <div id="adder-module" class="submodule-block">
+        <div class="submodule-intro">
+          <h3>1.3 Cascaded 4-Bit Ripple Carry Adder</h3>
+          <p>
+            Chaining four 1-bit full adders synthesized purely from 36 NAND gates (72 transistors total) performs multi-bit addition. The carry bit ripples sequentially from Stage 0 (LSB) to Stage 3 (MSB).
+          </p>
         </div>
-        <p class="description">
-          Chaining discrete full-adder cells facilitates multi-bit binary arithmetic. Intermediate carry bits propagate sequentially from LSB (Bit 0) to MSB (Bit 3), demonstrating temporal ripple progression.
-        </p>
 
-        <div class="adder-controls">
-          <div class="operand-row">
-            <label>Operand A (0&ndash;15):</label>
-            <div class="nibble-group">
-              <div class="nibble-selector" id="operand-a-bits">
-                <!-- 4 bit buttons -->
+        <div class="instrument-panel">
+          <div class="adder-controls">
+            <div class="operand-row">
+              <label>Operand A (0&ndash;15):</label>
+              <div class="nibble-group">
+                <div class="nibble-selector" id="operand-a-bits">
+                  <!-- 4 bit buttons dynamically populated -->
+                </div>
+                <span class="decimal-badge" id="operand-a-dec">= 0</span>
               </div>
-              <span class="decimal-badge" id="operand-a-dec">= 0</span>
+            </div>
+
+            <div class="operand-row">
+              <label>Operand B (0&ndash;15):</label>
+              <div class="nibble-group">
+                <div class="nibble-selector" id="operand-b-bits">
+                  <!-- 4 bit buttons dynamically populated -->
+                </div>
+                <span class="decimal-badge" id="operand-b-dec">= 0</span>
+              </div>
             </div>
           </div>
 
-          <div class="operand-row">
-            <label>Operand B (0&ndash;15):</label>
-            <div class="nibble-group">
-              <div class="nibble-selector" id="operand-b-bits">
-                <!-- 4 bit buttons -->
-              </div>
-              <span class="decimal-badge" id="operand-b-dec">= 0</span>
+          <!-- Pipeline Ripple Stages -->
+          <div class="adder-pipeline">
+            <div class="stages-container" id="stages-container">
+              <!-- Stage cards populated by app.js -->
             </div>
           </div>
-        </div>
 
-        <!-- Ripple Stages Visualizer -->
-        <div class="adder-pipeline">
-          <div class="stages-container" id="stages-container">
-            <!-- 4 Stage Cards populated by JS -->
-          </div>
-        </div>
-
-        <div class="adder-total-result">
-          <div class="total-formula">
-            <span id="adder-calc-text">A (0) + B (0) = 0</span>
-          </div>
-          <div class="total-binary">
-            <span class="total-chip">Carry Out: <strong class="badge-carry" id="adder-cout">0</strong></span>
-            <span class="total-chip">Sum [3:0]: <strong class="badge-sum" id="adder-sum-bin">0000</strong></span>
-            <span class="total-chip">Decimal: <strong id="adder-total-dec">0</strong></span>
+          <div class="adder-total-result">
+            <div class="total-formula">
+              <span id="adder-calc-text">A (0) + B (0) = 0</span>
+            </div>
+            <div class="total-binary">
+              <span class="total-chip">Carry Out: <strong class="badge-carry" id="adder-cout">0</strong></span>
+              <span class="total-chip">Sum [3:0]: <strong class="badge-sum" id="adder-sum-bin">0000</strong></span>
+              <span class="total-chip">Decimal Total: <strong id="adder-total-dec">0</strong></span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 2: ANALOG ELECTRONICS -->
+    <!-- MODULE 2: ANALOG COMMON-EMITTER AMPLIFIER -->
     <section id="analog" class="module-section">
-      <div class="section-header">
-        <span class="step-num">Module 02</span>
-        <h2>Analog Common-Emitter Amplifier</h2>
+      <div class="section-intro-block">
+        <div class="section-badge-row">
+          <span class="module-badge">Module 02</span>
+          <h2>Analog: Common-Emitter Amplifier</h2>
+        </div>
+        <p class="section-intro-text">
+          Operating in the linear active region, small-signal base oscillations modulate large collector currents. The resulting output voltage swing is inverted by 180&deg; and clips non-linearly if driven beyond supply boundaries.
+        </p>
       </div>
 
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>Transistor Small-Signal Amplification &amp; Non-Linear Rail Clipping</h3>
-          <span class="badge-sub">BJT CE Active-Region Dynamics • Supply Rails: VCC &amp; GND</span>
+      <div class="submodule-block">
+        <div class="submodule-intro">
+          <h3>Small-Signal Voltage Gain &amp; Supply Rail Clipping</h3>
+          <p>
+            Voltage gain A<sub>v</sub> = &minus;g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>). Observe the dual-channel oscilloscope display below: input sinusoidal oscillations in mV on Channel 1 (Amber), and inverted multi-volt swings on Channel 2 (Cyan) clamped against supply rails V<sub>CC</sub> and V<sub>CE,sat</sub>.
+          </p>
         </div>
 
-        <!-- Explanatory Copy as requested by USER -->
-        <div class="explanatory-copy-box">
-          <p class="copy-lead">
-            The common-emitter (CE) configuration operates as an active-region voltage amplifier, using small-signal base current variations to modulate a significantly larger collector current through the load resistance
-          </p>
-          <div class="key-concepts-grid">
-            <div class="concept-item">
-              <div class="concept-title">
-                <span class="concept-icon">⚡</span>
-                <strong>Voltage Gain (A<sub>v</sub>)</strong>
+        <div class="instrument-panel">
+          <div class="instrument-workbench">
+            <div class="control-panel">
+              <div class="control-group">
+                <label for="ce-preset-select">Circuit Testbench Preset:</label>
+                <select id="ce-preset-select" class="select-input">
+                  <option value="ltspice-12v" selected>LTspice Bench (12V Supply, Ce=100µF Bypassed • High Gain)</option>
+                  <option value="default-5v">5V Standard Bench (Re Degenerated • Av ≈ -4.7)</option>
+                </select>
               </div>
-              <p>
-                Governed by the transconductance (g<sub>m</sub>) of the BJT and the effective load impedance, determining the dynamic scaling factor applied to input signal oscillations.
-              </p>
-              <div class="concept-formula">
-                <code>A<sub>v</sub> = &minus;g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>) = &minus;(I<sub>C</sub> / V<sub>T</sub>) &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>)</code>
+
+              <div class="circuit-switch-row">
+                <button type="button" id="btn-toggle-bypass" class="btn-toggle-bypass active">Emitter Bypass (Ce): ENABLED</button>
+              </div>
+
+              <div class="control-group">
+                <label for="amp-slider">
+                  <span class="label-title">Input Amplitude (Peak):</span>
+                  <strong id="amp-display">10 mV (0.010 V)</strong>
+                </label>
+                <input type="range" id="amp-slider" min="0.002" max="0.050" step="0.002" value="0.010" aria-label="Input Amplitude">
+              </div>
+
+              <div class="control-group">
+                <label for="gain-slider">
+                  <span class="label-title">Voltage Gain Magnitude (|A<sub>v</sub>|):</span>
+                  <strong id="gain-display">159.1</strong>
+                </label>
+                <input type="range" id="gain-slider" min="10" max="250" step="1" value="159.1" aria-label="Gain Magnitude">
               </div>
             </div>
 
-            <div class="concept-item">
-              <div class="concept-title">
-                <span class="concept-icon">📐</span>
-                <strong>Saturation &amp; Cutoff Limits</strong>
+            <!-- Dual Stacked Oscilloscope Charts Sharing Time Axis -->
+            <div class="ce-charts-stack">
+              <div class="chart-wrapper ce-input-chart-wrapper">
+                <div class="chart-mini-header">
+                  <span class="chart-tag input-tag">CH1: Input Signal (v<sub>in</sub>) [mV]</span>
+                  <span class="chart-subtag">Small-signal AC excitation &bull; 1 kHz</span>
+                </div>
+                <canvas id="ceInputChart" aria-label="Input AC Waveform in mV"></canvas>
               </div>
-              <p>
-                Physical supply boundaries (V<sub>CC</sub> and GND) constrain the maximum output excursion. Driving the base beyond linear operating limits forces the collector voltage into saturation or cutoff, resulting in non-linear waveform distortion known as rail clipping.
-              </p>
-              <div class="concept-formula">
-                <code>V<sub>CE,sat</sub> &le; v<sub>out</sub>(t) &le; V<sub>CC</sub> &nbsp;&rarr;&nbsp; Cutoff Ceiling / Saturation Floor</code>
+
+              <div class="chart-wrapper ce-output-chart-wrapper">
+                <div class="chart-mini-header">
+                  <span class="chart-tag output-tag">CH2: Output Waveform (v<sub>out</sub>) [V]</span>
+                  <span class="chart-subtag">Amplified &amp; inverted collector voltage &bull; 1 kHz</span>
+                </div>
+                <canvas id="ceChart" aria-label="Output Collector Waveform in V"></canvas>
               </div>
+            </div>
+          </div>
+
+          <!-- Digital Readouts Beneath -->
+          <div class="readout-box">
+            <div class="readout-item">
+              <span class="label">DC Q-Point (V<sub>Q</sub>):</span>
+              <span id="ce-vq" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Transconductance (g<sub>m</sub>):</span>
+              <span id="ce-gm" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Effective Load (R<sub>C</sub> &parallel; R<sub>L</sub>):</span>
+              <span id="ce-rload" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Small-Signal Gain (A<sub>v</sub>):</span>
+              <span id="ce-av-calc" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Clipping State:</span>
+              <span id="ce-clipping" class="status-badge normal">UNCLIPPED (LINEAR)</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Max Linear Input:</span>
+              <span id="ce-max-amp" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Measured P-P Gain:</span>
+              <span id="ce-measured-gain" class="val">--</span>
             </div>
           </div>
         </div>
@@ -290,7 +422,7 @@
         <div class="asset-showcase-section">
           <h4 class="showcase-title">Hardware &amp; LTspice Bench Verification</h4>
           <div class="asset-gallery-grid">
-            <div class="gallery-card" data-lightbox="assets/ce-amplifier-schematic.jpeg" data-caption="LTspice Circuit Schematic: Common-Emitter Amplifier with Voltage Divider Bias (V2=12V, R3=47kΩ, R4=10kΩ, R1=4.7kΩ collector load, R2=1kΩ emitter resistor, C2=100µF emitter bypass capacitor, C1=10µF input coupling, C3=10µF output coupling, R5=10kΩ load resistor, BC547B NPN BJT, transient directive .tran 0 5m 0 10u).">
+            <div class="gallery-card" data-lightbox="assets/ce-amplifier-schematic.jpeg" data-caption="LTspice Circuit Schematic: Common-Emitter Amplifier with Voltage Divider Bias (V2=12V, R3=47kΩ, R4=10kΩ, R1=4.7kΩ collector load, R2=1kΩ emitter resistor, C2=100µF emitter bypass, BC547B NPN BJT).">
               <div class="gallery-img-container">
                 <img src="assets/ce-amplifier-schematic.jpeg" alt="LTspice Common-Emitter Amplifier Schematic" class="gallery-thumb">
                 <span class="gallery-zoom-badge">🔍 Zoom Schematic</span>
@@ -307,241 +439,152 @@
                 <span class="gallery-zoom-badge">🔍 Zoom Waveform</span>
               </div>
               <div class="gallery-info">
-                <strong>LTspice Input: V(n004)</strong>
+                <strong>LTspice Input Waveform: V(n004)</strong>
                 <span>10 mV peak AC signal @ 1 kHz (Period T = 1.0 ms)</span>
               </div>
             </div>
 
-            <div class="gallery-card" data-lightbox="assets/ce-output-waveform.jpeg" data-caption="LTspice Output Waveform V(n003): Small-signal amplification yielding ~1.5 V peak inverted output waveform (180° phase inversion, Av ≈ -150) governed by gm · (Rc || RL).">
+            <div class="gallery-card" data-lightbox="assets/ce-output-waveform.jpeg" data-caption="LTspice Output Waveform V(n003): Small-signal amplification yielding ~1.54 V peak inverted output waveform (180° phase inversion, Av ≈ -154).">
               <div class="gallery-img-container">
                 <img src="assets/ce-output-waveform.jpeg" alt="LTspice CE Output Waveform" class="gallery-thumb">
                 <span class="gallery-zoom-badge">🔍 Zoom Waveform</span>
               </div>
               <div class="gallery-info">
-                <strong>LTspice Output: V(n003)</strong>
-                <span>Amplified to ~1.5 V peak (180° phase inversion, Av ≈ -150)</span>
+                <strong>LTspice Output Waveform: V(n003)</strong>
+                <span>Amplified to ~1.54 V peak (180° phase inversion, Av ≈ -154)</span>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive Live Simulation & Oscilloscope -->
-        <div class="grid-2col">
-          <div class="control-panel">
-            <div class="control-group">
-              <label for="ce-preset-select">Circuit Testbench Preset:</label>
-              <select id="ce-preset-select" class="select-input">
-                <option value="ltspice-12v" selected>LTspice Bench (12V Supply, Ce=100µF Bypassed • High Gain)</option>
-                <option value="default-5v">5V Standard Bench (Re Degenerated • Av ≈ -4.7)</option>
-              </select>
-            </div>
-
-            <div class="circuit-switch-row">
-              <button type="button" id="btn-toggle-bypass" class="btn-toggle-bypass active">Emitter Bypass (Ce): ENABLED</button>
-            </div>
-
-            <div class="control-group">
-              <label for="amp-slider"><span class="label-title">Input Amplitude (Peak):</span> <strong id="amp-display">0.010 V (10 mV)</strong></label>
-              <input type="range" id="amp-slider" min="0.005" max="0.100" step="0.005" value="0.010">
-            </div>
-
-            <div class="control-group">
-              <label for="gain-slider"><span class="label-title">Voltage Gain Magnitude (|A<sub>v</sub>|):</span> <strong id="gain-display">159.1</strong></label>
-              <input type="range" id="gain-slider" min="1.0" max="250.0" step="1.0" value="159.1">
-            </div>
-
-            <div class="readout-box">
-              <div class="readout-item">
-                <span class="label">DC Q-Point Collector (V<sub>Q</sub>):</span>
-                <span id="ce-vq" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Transconductance (g<sub>m</sub>):</span>
-                <span id="ce-gm" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Effective Load (R<sub>C</sub> &parallel; R<sub>L</sub>):</span>
-                <span id="ce-rload" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Small-Signal Gain (A<sub>v</sub>):</span>
-                <span id="ce-av-calc" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Clipping State:</span>
-                <span id="ce-clipping" class="status-badge normal">Unclipped</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Max Linear Input Amplitude:</span>
-                <span id="ce-max-amp" class="val">--</span>
-              </div>
-              <div class="readout-item">
-                <span class="label">Measured P-P Gain:</span>
-                <span id="ce-measured-gain" class="val">--</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ce-charts-stack">
-            <div class="chart-wrapper ce-input-chart-wrapper">
-              <div class="chart-mini-header">
-                <span class="chart-tag input-tag">Input Signal (v<sub>in</sub>)</span>
-                <span class="chart-subtag">Small-signal AC excitation [mV]</span>
-              </div>
-              <canvas id="ceInputChart"></canvas>
-            </div>
-
-            <div class="chart-wrapper ce-output-chart-wrapper">
-              <div class="chart-mini-header">
-                <span class="chart-tag output-tag">Output Waveform (v<sub>out</sub>)</span>
-                <span class="chart-subtag">Amplified &amp; inverted collector voltage [V]</span>
-              </div>
-              <canvas id="ceChart"></canvas>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 3: NEURAL & BIOPHYSICAL MODELS -->
+    <!-- MODULE 3: NEURAL MODELS -->
     <section id="neural" class="module-section">
-      <div class="section-header">
-        <span class="step-num">Module 03</span>
-        <h2>Neural &amp; Biophysical Models</h2>
+      <div class="section-intro-block">
+        <div class="section-badge-row">
+          <span class="module-badge">Module 03</span>
+          <h2>Neural: Artificial vs. Spiking Neurons</h2>
+        </div>
+        <p class="section-intro-text">
+          Artificial neural networks evaluate deterministic algebraic transformations through static activation functions, whereas biological neurons integrate temporal charge across a leaky RC lipid bilayer and emit discrete action potentials.
+        </p>
       </div>
 
-      <div class="sub-module card">
-        <div class="sub-header">
-          <h3>Static Artificial Abstractions vs. Biophysical LIF Dynamics</h3>
-          <span class="badge-sub">Static Rate Model vs. Temporal RC Electrodynamics</span>
-        </div>
-
-        <!-- Explanatory Copy as requested by USER -->
-        <div class="explanatory-copy-box">
-          <p class="copy-lead">
-            This module contrasts rate-based mathematical abstractions with temporal biophysical membrane electrodynamics:
+      <!-- 3.1 Artificial Perceptron -->
+      <div class="submodule-block">
+        <div class="submodule-intro">
+          <h3>3.1 Artificial Perceptron: Dot Product &amp; Activation Curve</h3>
+          <p>
+            Computes an affine transformation z = w<sup>T</sup>x + b and projects through an activation function (Sigmoid, Step, or ReLU). Adjust inputs and weights with sliders to observe the real-time operating point on the activation response curve.
           </p>
-
-          <div class="models-contrast-grid">
-            <!-- Model A: Artificial Neuron -->
-            <div class="contrast-card artificial-card">
-              <div class="contrast-header">
-                <span class="contrast-icon">🧠</span>
-                <h4>Artificial Neuron (Static Rate Model)</h4>
-              </div>
-              <p class="contrast-desc">
-                Evaluates an affine transformation (z = w<sup>T</sup>x + b) projected through a deterministic activation function.
-              </p>
-
-              <div class="activation-types-list">
-                <div class="act-type-item">
-                  <strong class="act-name">Step Function:</strong>
-                  <span>Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.</span>
-                  <div class="formula-inline"><code>H(z) = 1 &nbsp;(if z &ge; 0), &nbsp; 0 &nbsp;(if z &lt; 0)</code></div>
-                </div>
-
-                <div class="act-type-item">
-                  <strong class="act-name">Sigmoid Function:</strong>
-                  <span>Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.</span>
-                  <div class="formula-inline"><code>&sigma;(z) = 1 / (1 + e<sup>&minus;z</sup>)</code></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Model B: Leaky Integrate-and-Fire -->
-            <div class="contrast-card biophysical-card">
-              <div class="contrast-header">
-                <span class="contrast-icon">⚡</span>
-                <h4>Leaky Integrate-and-Fire (LIF Model)</h4>
-              </div>
-              <p class="contrast-desc">
-                Models the sub-threshold membrane dynamics of a biological neuron using an equivalent RC circuit. Integrated via Euler steps, the membrane potential (v) continuously dissipates charge through passive leakage while integrating input currents. When potential reaches the threshold voltage (v<sub>th</sub>), the system fires a discrete action potential and resets to baseline.
-              </p>
-
-              <div class="lif-spec-callout">
-                <div class="lif-spec-item">
-                  <strong>Differential Equation:</strong>
-                  <code>C &middot; (dv/dt) = I(t) &minus; (v / R)</code>
-                </div>
-                <div class="lif-spec-item">
-                  <strong>Euler Integration Step:</strong>
-                  <code>v(t + &Delta;t) = v(t) + (&Delta;t / C) &middot; [I(t) &minus; v(t) / R]</code>
-                </div>
-                <div class="lif-spec-item">
-                  <strong>Threshold Firing &amp; Reset:</strong>
-                  <code>If v(t) &ge; v<sub>th</sub> &nbsp;&rarr;&nbsp; Spike Event &delta;(t), &nbsp; v &larr; 0 V</code>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <!-- 3.1 Artificial Neuron Interactive Workbench -->
-        <div class="sub-workbench-container" style="margin-top: 1.5rem;">
-          <div class="sub-header">
-            <h4>3.1 Artificial Perceptron: Dot Product &amp; Activation Function</h4>
-            <span class="badge-sub">y = f(w<sup>T</sup>x + b)</span>
-          </div>
-
+        <div class="instrument-panel">
           <div class="perceptron-layout">
             <div class="neuron-inputs">
               <div class="weight-row">
-                <span>Input x₁: <input type="number" id="x1" value="1.0" step="0.1" class="num-input"></span>
-                <span>Weight w₁: <input type="number" id="w1" value="0.8" step="0.1" class="num-input"></span>
+                <div class="control-group">
+                  <label for="x1"><span class="label-title">Input x<sub>1</sub>:</span> <strong id="x1-disp">1.00</strong></label>
+                  <input type="range" id="x1" min="-2.0" max="2.0" step="0.1" value="1.0" aria-label="Input x1">
+                </div>
+                <div class="control-group">
+                  <label for="w1"><span class="label-title">Weight w<sub>1</sub>:</span> <strong id="w1-disp">0.80</strong></label>
+                  <input type="range" id="w1" min="-2.0" max="2.0" step="0.1" value="0.8" aria-label="Weight w1">
+                </div>
               </div>
+
               <div class="weight-row">
-                <span>Input x₂: <input type="number" id="x2" value="0.5" step="0.1" class="num-input"></span>
-                <span>Weight w₂: <input type="number" id="w2" value="-0.5" step="0.1" class="num-input"></span>
+                <div class="control-group">
+                  <label for="x2"><span class="label-title">Input x<sub>2</sub>:</span> <strong id="x2-disp">0.50</strong></label>
+                  <input type="range" id="x2" min="-2.0" max="2.0" step="0.1" value="0.5" aria-label="Input x2">
+                </div>
+                <div class="control-group">
+                  <label for="w2"><span class="label-title">Weight w<sub>2</sub>:</span> <strong id="w2-disp">-0.50</strong></label>
+                  <input type="range" id="w2" min="-2.0" max="2.0" step="0.1" value="-0.5" aria-label="Weight w2">
+                </div>
               </div>
+
               <div class="weight-row">
-                <span>Input x₃: <input type="number" id="x3" value="0.2" step="0.1" class="num-input"></span>
-                <span>Weight w₃: <input type="number" id="w3" value="1.2" step="0.1" class="num-input"></span>
+                <div class="control-group">
+                  <label for="x3"><span class="label-title">Input x<sub>3</sub>:</span> <strong id="x3-disp">0.20</strong></label>
+                  <input type="range" id="x3" min="-2.0" max="2.0" step="0.1" value="0.2" aria-label="Input x3">
+                </div>
+                <div class="control-group">
+                  <label for="w3"><span class="label-title">Weight w<sub>3</sub>:</span> <strong id="w3-disp">1.20</strong></label>
+                  <input type="range" id="w3" min="-2.0" max="2.0" step="0.1" value="1.2" aria-label="Weight w3">
+                </div>
               </div>
-              <div class="weight-row">
-                <span>Bias b: <input type="number" id="bias" value="-0.3" step="0.1" class="num-input"></span>
-                <span>Activation: 
-                  <select id="activation-select" class="select-input">
-                    <option value="sigmoid" selected>Sigmoid σ(z)</option>
-                    <option value="step">Step (Threshold 0)</option>
-                    <option value="relu">ReLU</option>
-                  </select>
-                </span>
+
+              <div class="control-group">
+                <label for="bias"><span class="label-title">Bias b:</span> <strong id="bias-disp">-0.30</strong></label>
+                <input type="range" id="bias" min="-2.0" max="2.0" step="0.1" value="-0.3" aria-label="Bias b">
               </div>
+
+              <div class="control-group">
+                <label for="activation-select">Activation Function f(z):</label>
+                <select id="activation-select" class="select-input">
+                  <option value="sigmoid" selected>Sigmoid &sigma;(z) = 1 / (1 + e⁻ᶻ)</option>
+                  <option value="step">Heaviside Step H(z)</option>
+                  <option value="relu">Rectified Linear Unit (ReLU)</option>
+                </select>
+              </div>
+
               <div id="activation-description-badge" class="act-badge-desc">
-                Sigmoid Function: Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.
+                Sigmoid Function: Maps inputs onto continuous open interval (0, 1), modeling normalized activation rates.
               </div>
             </div>
 
-            <div class="neuron-display-card">
-              <div class="math-box">
-                <span class="math-title">Affine Transformation (z = w<sup>T</sup>x + b):</span>
-                <strong class="math-val" id="neuron-z">0.000</strong>
+            <!-- Activation Function Response Plot -->
+            <div class="chart-wrapper">
+              <div class="chart-mini-header">
+                <span class="chart-tag output-tag">CH2: Activation Curve f(z)</span>
+                <span class="chart-subtag">Operating Point at current z</span>
               </div>
-              <div class="math-box output-highlight">
-                <span class="math-title">Deterministic Output y = f(z):</span>
-                <strong class="math-val" id="neuron-y">0.000</strong>
-              </div>
+              <canvas id="neuronChart" aria-label="Neuron Activation Function Response"></canvas>
+            </div>
+          </div>
+
+          <!-- Digital Readouts Beneath -->
+          <div class="readout-box">
+            <div class="readout-item">
+              <span class="label">Affine Sum (z = w<sup>T</sup>x + b):</span>
+              <span id="neuron-z" class="val">0.0000</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Activation Output (y = f(z)):</span>
+              <span id="neuron-y" class="val">0.0000</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- 3.2 Biophysical Leaky Integrate-and-Fire (LIF) Spiking Neuron Workbench -->
-        <div class="sub-workbench-container" style="margin-top: 2rem;">
-          <div class="sub-header">
-            <h4>3.2 Biophysical LIF Spiking Dynamics &amp; Euler Integration</h4>
-            <span class="badge-sub">RC Membrane Electrodynamics • Passive Leakage &amp; Action Potentials</span>
-          </div>
+      <!-- 3.2 Biophysical Leaky Integrate-and-Fire (LIF) Dynamics -->
+      <div class="submodule-block">
+        <div class="submodule-intro">
+          <h3>3.2 Biophysical Leaky Integrate-and-Fire Dynamics</h3>
+          <p>
+            An equivalent RC circuit (C = 1 &mu;F, R = 100 k&Omega;, &tau; = 100 ms) integrates input stimulation current. When membrane potential reaches threshold V<sub>th</sub>, an action potential spike is emitted and potential resets to zero.
+          </p>
+        </div>
 
-          <div class="grid-2col">
+        <div class="instrument-panel">
+          <div class="instrument-workbench">
             <div class="control-panel">
               <div class="control-group">
-                <label for="lif-rate"><span class="label-title">Input Pulse Rate:</span> <strong id="lif-rate-disp">50 Hz</strong></label>
-                <input type="range" id="lif-rate" min="10" max="100" step="5" value="50">
+                <label for="lif-rate">
+                  <span class="label-title">Input Pulse Rate:</span>
+                  <strong id="lif-rate-disp">50 Hz</strong>
+                </label>
+                <input type="range" id="lif-rate" min="10" max="100" step="5" value="50" aria-label="Input Pulse Rate">
               </div>
 
               <div class="control-group">
-                <label for="lif-vth"><span class="label-title">Spike Threshold (V<sub>th</sub>):</span> <strong id="lif-vth-disp">1.00 V</strong></label>
-                <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00">
+                <label for="lif-vth">
+                  <span class="label-title">Spike Threshold (V<sub>th</sub>):</span>
+                  <strong id="lif-vth-disp">1.00 V</strong>
+                </label>
+                <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00" aria-label="Spike Threshold Vth">
               </div>
 
               <div class="control-group">
@@ -551,109 +594,119 @@
                   <option value="constant">Constant DC Current (20 µA)</option>
                 </select>
               </div>
-
-              <div class="readout-box">
-                <div class="readout-item">
-                  <span class="label">Membrane Time Constant (τ = RC):</span>
-                  <span id="lif-tau" class="val">100 ms</span>
-                </div>
-                <div class="readout-item">
-                  <span class="label">Spike Count:</span>
-                  <span id="lif-spikes" class="val">--</span>
-                </div>
-                <div class="readout-item">
-                  <span class="label">Firing Rate:</span>
-                  <span id="lif-firing-rate" class="val">-- Hz</span>
-                </div>
-              </div>
             </div>
 
             <div class="chart-wrapper">
-              <canvas id="lifChart"></canvas>
+              <div class="chart-mini-header">
+                <span class="chart-tag output-tag">CH2: Membrane Potential V(t) [V]</span>
+                <span class="chart-subtag">Time: 0 to 500 ms &bull; Spikes marked at threshold</span>
+              </div>
+              <canvas id="lifChart" aria-label="LIF Membrane Potential Waveform Plot"></canvas>
+            </div>
+          </div>
+
+          <!-- Digital Readouts Beneath -->
+          <div class="readout-box">
+            <div class="readout-item">
+              <span class="label">Membrane Time Constant (&tau; = RC):</span>
+              <span id="lif-tau" class="val">100 ms</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Spike Count:</span>
+              <span id="lif-spikes" class="val">--</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Firing Frequency:</span>
+              <span id="lif-firing-rate" class="val">-- Hz</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- VALIDATION SYNTHESIS -->
+    <!-- VALIDATION SYNTHESIS MATRIX -->
     <section id="validation" class="module-section">
-      <div class="section-header">
-        <span class="step-num">Synthesis</span>
-        <h2>Validation Matrix: Theory vs. Models</h2>
+      <div class="section-intro-block">
+        <div class="section-badge-row">
+          <span class="module-badge">Synthesis</span>
+          <h2>Validation Matrix: Theory vs. Models</h2>
+        </div>
+        <p class="section-intro-text">
+          Direct quantitative comparison between idealized mathematical formulations, JavaScript client-side simulation models, and SPICE physics-based simulation benchmarks.
+        </p>
       </div>
 
-      <div class="card">
-        <div class="table-scroll-hint">
-          <span>⇄ Swipe or scroll horizontally to inspect benchmark data</span>
-        </div>
+      <div class="validation-card">
         <div class="table-responsive">
           <table class="validation-table">
-          <thead>
-            <tr>
-              <th>Circuit Test</th>
-              <th>Analytical / Hand Calc</th>
-              <th>JavaScript Simulation</th>
-              <th>Benchmark Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>BJT Inverter Turn-on</strong></td>
-              <td>V<sub>in</sub> = 0.70 V</td>
-              <td>0.70 V (cutoff to active)</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-            <tr>
-              <td><strong>BJT Inverter Saturation</strong></td>
-              <td>V<sub>in</sub> &approx; 1.18 V (V<sub>CE</sub> = 0.20 V)</td>
-              <td>1.18 V (saturation clamped)</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-            <tr>
-              <td><strong>4-Bit Adder (36 NAND)</strong></td>
-              <td>Truth table addition (0&ndash;30 range)</td>
-              <td>Bit-exact NAND propagation</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-            <tr>
-              <td><strong>CE Midband Gain (Degenerated)</strong></td>
-              <td>|A<sub>v</sub>| &approx; R<sub>C</sub> / R<sub>E</sub> = 4.70</td>
-              <td>4.70 (Inverted phase 180&deg;)</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-            <tr>
-              <td><strong>CE Small-Signal Gain (Bypassed)</strong></td>
-              <td>|A<sub>v</sub>| = g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>) &approx; 159.1</td>
-              <td>159.1 (LTspice waveform &approx; 150)</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-            <tr>
-              <td><strong>LIF Constant Firing Period</strong></td>
-              <td>T = RC &middot; ln[IR / (IR &minus; V<sub>th</sub>)]</td>
-              <td>Euler numerical integration</td>
-              <td><span class="badge-status match">Verified Match</span></td>
-            </tr>
-          </tbody>
-        </table>
+            <thead>
+              <tr>
+                <th>Benchmark Test</th>
+                <th>Analytical / Theory</th>
+                <th>JavaScript Model</th>
+                <th>LTspice Simulation</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>BJT Turn-on Threshold</strong></td>
+                <td>V<sub>BE</sub> = 0.70 V</td>
+                <td>0.70 V</td>
+                <td>&approx; 0.5&ndash;0.6 V</td>
+                <td><span class="badge-status differs">Differs (explained)</span></td>
+              </tr>
+              <tr>
+                <td><strong>BJT Saturation Threshold</strong></td>
+                <td>V<sub>in</sub> &approx; 1.18 V (V<sub>CE</sub> = 0.20 V)</td>
+                <td>1.18 V</td>
+                <td>&approx; 0.9 V</td>
+                <td><span class="badge-status differs">Differs (explained)</span></td>
+              </tr>
+              <tr>
+                <td><strong>CE Bypassed Gain</strong></td>
+                <td>|A<sub>v</sub>| = g<sub>m</sub> &middot; (R<sub>C</sub> &parallel; R<sub>L</sub>) = 159.1</td>
+                <td>159.1</td>
+                <td>&approx; 154</td>
+                <td><span class="badge-status close">Within 3%</span></td>
+              </tr>
+              <tr>
+                <td><strong>4-Bit Adder (36 NAND)</strong></td>
+                <td>Truth table addition (256/256 vectors)</td>
+                <td>256/256 exact match</td>
+                <td>n/a</td>
+                <td><span class="badge-status match">Match</span></td>
+              </tr>
+              <tr>
+                <td><strong>LIF Constant Firing Period</strong></td>
+                <td>69.31 ms formula (T = RC &middot; ln[IR / (IR &minus; V<sub>th</sub>)])</td>
+                <td>69.30 ms sim</td>
+                <td>n/a</td>
+                <td><span class="badge-status match">Match</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p class="validation-note">
+          The simple model assumes &beta; = 100 and a sharp 0.7 V turn-on; the BC547B in LTspice has a higher &beta; and turns on gradually.
+        </p>
       </div>
     </section>
   </main>
 
-  <!-- Lightbox Modal for Inspection of Circuit Schematics & Simulation Waveforms -->
+  <!-- Lightbox Modal for Inspection of Schematics & Waveforms -->
   <div id="image-modal" class="modal-backdrop" aria-hidden="true" role="dialog">
     <div class="modal-content">
-      <button class="modal-close" id="modal-close-btn" aria-label="Close modal">&times;</button>
+      <button type="button" class="modal-close" id="modal-close-btn" aria-label="Close inspection modal">&times;</button>
       <div class="modal-image-wrapper">
-        <img id="modal-img" src="" alt="Circuit Diagram Inspection">
+        <img id="modal-img" src="" alt="Enlarged circuit inspection">
       </div>
       <div class="modal-caption" id="modal-caption"></div>
     </div>
   </div>
 
   <footer class="footer">
-    <p>TransistorLab: From Silicon to Intelligence • Built by samael0-dev</p>
+    <p>TransistorLab: From Silicon to Intelligence &bull; Engineering Datasheet &bull; Built with Vanilla Web Standards</p>
   </footer>
 
   <script type="module" src="js/app.js"></script>
