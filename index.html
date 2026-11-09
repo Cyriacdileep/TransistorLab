@@ -243,12 +243,12 @@
     <section id="analog" class="module-section">
       <div class="section-header">
         <span class="step-num">Module 02</span>
-        <h2>Module 2: Analog Common-Emitter Amplifier</h2>
+        <h2>Analog Common-Emitter Amplifier</h2>
       </div>
 
       <div class="sub-module card">
         <div class="sub-header">
-          <h3>Title: Transistor Small-Signal Amplification &amp; Non-Linear Rail Clipping</h3>
+          <h3>Transistor Small-Signal Amplification &amp; Non-Linear Rail Clipping</h3>
           <span class="badge-sub">BJT CE Active-Region Dynamics • Supply Rails: VCC &amp; GND</span>
         </div>
 
@@ -382,8 +382,22 @@
             </div>
           </div>
 
-          <div class="chart-wrapper">
-            <canvas id="ceChart"></canvas>
+          <div class="ce-charts-stack">
+            <div class="chart-wrapper ce-input-chart-wrapper">
+              <div class="chart-mini-header">
+                <span class="chart-tag input-tag">Input Signal (v<sub>in</sub>)</span>
+                <span class="chart-subtag">Small-signal AC excitation [mV]</span>
+              </div>
+              <canvas id="ceInputChart"></canvas>
+            </div>
+
+            <div class="chart-wrapper ce-output-chart-wrapper">
+              <div class="chart-mini-header">
+                <span class="chart-tag output-tag">Output Waveform (v<sub>out</sub>)</span>
+                <span class="chart-subtag">Amplified &amp; inverted collector voltage [V]</span>
+              </div>
+              <canvas id="ceChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -393,12 +407,12 @@
     <section id="neural" class="module-section">
       <div class="section-header">
         <span class="step-num">Module 03</span>
-        <h2>Module 3: Neural &amp; Biophysical Models</h2>
+        <h2>Neural &amp; Biophysical Models</h2>
       </div>
 
       <div class="sub-module card">
         <div class="sub-header">
-          <h3>Title: Static Artificial Abstractions vs. Biophysical LIF Dynamics</h3>
+          <h3>Static Artificial Abstractions vs. Biophysical LIF Dynamics</h3>
           <span class="badge-sub">Static Rate Model vs. Temporal RC Electrodynamics</span>
         </div>
 

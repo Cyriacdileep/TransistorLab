@@ -75,8 +75,8 @@ ANALOG/
 
 ## 👥 Project Team & Responsibilities
 
-* **Melvin Dileep (125EI0015)** — Role: Team Lead / Modeling & Validation (Physics models in JavaScript, validation synthesis)
-* **Arnab Naskar (125EI0009)** — Role: Web Developer (Front-end interface, interactive visualizations, deployment)
-* **Thushan Mohanraj (125EI0007)** — Role: LTspice & Hardware Bench (LTspice simulation & hardware breadboard bench)
-* **CH. Lokhesh (125EI0047)** — Role: Documentation & Presentation (Section copy, educational narrative, slide deck)
-* **Abhishek Singh (125EI0013)** — Role: Testing, Math & Report (Testing, mathematical verification, written report)
+* **Melvin Dileep (125EI0015)** — Role: Team Lead / Modeling & Validation
+* **Arnab Naskar (125EI0009)** — Role: Web Developer
+* **Thushan Mohanraj (125EI0007)** — Role: LTspice & Hardware Bench
+* **CH. Lokhesh (125EI0047)** — Role: Documentation & Presentation
+* **Abhishek Singh (125EI0013)** — Testing, Math & Report

@@ -52,6 +52,7 @@ const state = {
 
 let bjtChartInstance = null;
 let ceChartInstance = null;
+let ceInputChartInstance = null;
 let lifChartInstance = null;
 
 /* ============================================================
@@ -326,31 +327,85 @@ function initAmpModule() {
   const gainSlider = document.getElementById('gain-slider');
   const ampDisp = document.getElementById('amp-display');
   const gainDisp = document.getElementById('gain-display');
-  const ctx = document.getElementById('ceChart').getContext('2d');
+  const inputCtx = document.getElementById('ceInputChart').getContext('2d');
+  const outputCtx = document.getElementById('ceChart').getContext('2d');
 
   let currentPreset = 'ltspice-12v';
   let isBypassed = true;
 
-  ceChartInstance = new Chart(ctx, {
+  // Chart 1: Small-Signal AC Input Waveform in mV (own focused scale)
+  ceInputChartInstance = new Chart(inputCtx, {
     type: 'line',
     data: {
       labels: [],
       datasets: [
         {
-          label: 'Vin (Input Signal + Base Bias)',
+          label: 'Vin (Input AC [mV])',
           data: [],
           borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.08)',
           borderWidth: 2,
           pointRadius: 0,
-          tension: 0.3
+          tension: 0.3,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          display: true,
+          title: { display: false },
+          grid: { color: '#243048' },
+          ticks: { color: '#94a3b8', maxTicksLimit: 8 }
         },
+        y: {
+          title: { display: true, text: 'Vin (mV)', color: '#10b981' },
+          grid: { color: '#243048' },
+          ticks: { color: '#94a3b8' }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+  // Chart 2: Collector Output Waveform in V with Cutoff & Saturation Rail Indicators
+  ceChartInstance = new Chart(outputCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
         {
-          label: 'Vout (Collector Waveform)',
+          label: 'Vout (Collector Waveform [V])',
           data: [],
           borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.06)',
           borderWidth: 2.5,
           pointRadius: 0,
-          tension: 0.3
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: 'Cutoff Ceiling (Vcc)',
+          data: [],
+          borderColor: 'rgba(244, 63, 94, 0.75)',
+          borderWidth: 1.5,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        },
+        {
+          label: 'Saturation Floor (Vce,sat)',
+          data: [],
+          borderColor: 'rgba(244, 63, 94, 0.75)',
+          borderWidth: 1.5,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
         }
       ]
     },
@@ -366,13 +421,13 @@ function initAmpModule() {
         y: {
           min: 0,
           max: 13.0,
-          title: { display: true, text: 'Voltage (V)', color: '#94a3b8' },
+          title: { display: true, text: 'Vout (V)', color: '#f59e0b' },
           grid: { color: '#243048' },
           ticks: { color: '#94a3b8' }
         }
       },
       plugins: {
-        legend: { labels: { color: '#e2e8f0' } }
+        legend: { labels: { color: '#e2e8f0', boxWidth: 14 } }
       }
     }
   });
@@ -383,9 +438,7 @@ function initAmpModule() {
         ampSlider.min = '0.002';
         ampSlider.max = '0.050';
         ampSlider.step = '0.002';
-        if (parseFloat(ampSlider.value) > 0.050 || parseFloat(ampSlider.value) < 0.002) {
-          ampSlider.value = '0.010';
-        }
+        ampSlider.value = '0.010'; // default 10 mV matching LTspice
         gainSlider.min = '10';
         gainSlider.max = '250';
         gainSlider.step = '1';
@@ -404,9 +457,7 @@ function initAmpModule() {
       ampSlider.min = '0.05';
       ampSlider.max = '1.50';
       ampSlider.step = '0.05';
-      if (parseFloat(ampSlider.value) > 1.50) {
-        ampSlider.value = '0.20';
-      }
+      ampSlider.value = '0.20';
       gainSlider.min = '1.0';
       gainSlider.max = '10.0';
       gainSlider.step = '0.1';
@@ -425,7 +476,7 @@ function initAmpModule() {
     state.amp = parseFloat(ampSlider.value);
     state.gain = parseFloat(gainSlider.value);
 
-    // Format display string for millivolts if < 0.1 V
+    // Format display string cleanly
     if (state.amp < 0.1) {
       ampDisp.textContent = `${(state.amp * 1000).toFixed(0)} mV (${state.amp.toFixed(3)} V)`;
     } else {
@@ -470,9 +521,21 @@ function initAmpModule() {
     const measGainEl = document.getElementById('ce-measured-gain');
     if (measGainEl) measGainEl.textContent = res.measuredGain.toFixed(1);
 
-    ceChartInstance.data.labels = res.t.map(ti => (ti * 1000).toFixed(2));
-    ceChartInstance.data.datasets[0].data = res.vin.map(v => v + bias.vb); // visual input at DC base level
-    ceChartInstance.data.datasets[1].data = res.vout;
+    const timeLabels = res.t.map(ti => (ti * 1000).toFixed(2));
+
+    // Plot input on its own dedicated small chart in mV
+    ceInputChartInstance.data.labels = timeLabels;
+    ceInputChartInstance.data.datasets[0].data = res.vin.map(v => v * 1000);
+    const inPeakMv = Math.max(5, Math.ceil(state.amp * 1000 * 1.3));
+    ceInputChartInstance.options.scales.y.min = -inPeakMv;
+    ceInputChartInstance.options.scales.y.max = inPeakMv;
+    ceInputChartInstance.update('none');
+
+    // Plot output waveform on 0-13V scale with supply rail limits
+    ceChartInstance.data.labels = timeLabels;
+    ceChartInstance.data.datasets[0].data = res.vout;
+    ceChartInstance.data.datasets[1].data = res.t.map(() => res.vmax); // Cutoff ceiling Vcc
+    ceChartInstance.data.datasets[2].data = res.t.map(() => res.vmin); // Saturation floor
     ceChartInstance.update('none');
   };
 
@@ -566,15 +629,25 @@ function initLIFModule() {
   lifChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: [],
       datasets: [
         {
           label: 'Membrane Potential V(t) [V]',
           data: [],
           borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.08)',
           borderWidth: 2,
           pointRadius: 0,
-          tension: 0.1
+          tension: 0.05,
+          fill: true
+        },
+        {
+          label: 'Threshold Vth [V]',
+          data: [],
+          borderColor: '#f43f5e',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false
         }
       ]
     },
@@ -583,9 +656,16 @@ function initLIFModule() {
       maintainAspectRatio: false,
       scales: {
         x: {
+          type: 'linear',
+          min: 0,
+          max: 0.5,
           title: { display: true, text: 'Time (s)', color: '#94a3b8' },
           grid: { color: '#243048' },
-          ticks: { color: '#94a3b8', maxTicksLimit: 10 }
+          ticks: {
+            color: '#94a3b8',
+            stepSize: 0.05,
+            callback: (v) => Number(v).toFixed(2) + ' s'
+          }
         },
         y: {
           min: 0,
@@ -596,7 +676,7 @@ function initLIFModule() {
         }
       },
       plugins: {
-        legend: { labels: { color: '#e2e8f0' } }
+        legend: { labels: { color: '#e2e8f0', boxWidth: 14 } }
       }
     }
   });
@@ -615,8 +695,13 @@ function initLIFModule() {
     document.getElementById('lif-spikes').textContent = res.spikes.length;
     document.getElementById('lif-firing-rate').textContent = `${res.outputRate.toFixed(1)} Hz`;
 
-    lifChartInstance.data.labels = res.t.map(ti => ti.toFixed(3));
-    lifChartInstance.data.datasets[0].data = res.v;
+    // Map time cleanly to {x, y} for linear scale with tidy step ticks
+    lifChartInstance.data.datasets[0].data = res.t.map((ti, idx) => ({ x: ti, y: res.v[idx] }));
+    // Dashed threshold line at Vth across 0 to 0.5 s
+    lifChartInstance.data.datasets[1].data = [
+      { x: 0, y: vth },
+      { x: 0.5, y: vth }
+    ];
     lifChartInstance.update('none');
   };
 
@@ -686,6 +771,7 @@ export {
   state,
   bjtChartInstance,
   ceChartInstance,
+  ceInputChartInstance,
   lifChartInstance,
   initBJTModule,
   initGateModule,
