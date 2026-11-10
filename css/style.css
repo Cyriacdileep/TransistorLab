@@ -1519,6 +1519,61 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1.45;
 }
 
+/* Module 3.1: neuron-as-a-gate panel */
+.neuron-math-viewport {
+  padding: 1.25rem;
+  background-color: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.neuron-weights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.neuron-chip {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-rule);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+}
+
+.neuron-chip strong {
+  color: var(--text-main);
+  margin-left: 0.35rem;
+}
+
+.neuron-sum {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-main);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.neuron-sum strong {
+  color: var(--trace-ch2);
+}
+
+.neuron-verdict {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.neuron-rule {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
 /* ============================================================
  * Hardware & Bench Verification Gallery
  * ============================================================ */

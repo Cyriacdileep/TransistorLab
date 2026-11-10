@@ -38,15 +38,13 @@ const state = {
   gain: 159.1,
   // Module 3
   perceptron: {
-    x: [1.0, 0.5, 0.2],
-    w: [0.8, -0.5, 1.2],
-    b: -0.3,
-    act: 'sigmoid'
+    a: 0,
+    b: 0,
+    gate: 'NAND'
   },
   lif: {
     rate: 50,
-    vth: 1.0,
-    mode: 'pulses'
+    vth: 1.0
   }
 };
 
@@ -1153,129 +1151,81 @@ function initAmpModule() {
 }
 
 /* ============================================================
- * Module 3.1: Artificial Perceptron & Activation Plot
+ * Module 3.1: A Neuron as a Logic Gate (step-activation perceptron)
  * ============================================================ */
 function initNeuronModule() {
-  const inputs = ['x1', 'x2', 'x3'].map(id => document.getElementById(id));
-  const weights = ['w1', 'w2', 'w3'].map(id => document.getElementById(id));
-  const biasInput = document.getElementById('bias');
-  const actSelect = document.getElementById('activation-select');
-  const actBadge = document.getElementById('activation-description-badge');
-  const canvas = document.getElementById('neuronChart');
+  const tabs = document.querySelectorAll('#neuron-gate-tabs .tab-btn');
+  const btnA = document.getElementById('neuron-a');
+  const btnB = document.getElementById('neuron-b');
+  const outEl = document.getElementById('neuron-out');
+  const outLabel = document.getElementById('neuron-out-label');
+  const weightsEl = document.getElementById('neuron-weights');
+  const sumEl = document.getElementById('neuron-sum');
+  const truthEl = document.getElementById('neuron-truth-table');
+  if (!btnA || !btnB || !outEl) return;
 
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  // Build activation curve [-5, 5]
-  const zPoints = [];
-  for (let z = -5; z <= 5; z += 0.2) {
-    zPoints.push(parseFloat(z.toFixed(2)));
-  }
-
-  const tc = getThemeColors();
-
-  neuronChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'Activation Function f(z)',
-          data: [],
-          borderColor: tc.ch2Color,
-          borderWidth: 2.2,
-          pointRadius: 0,
-          tension: 0.1,
-          fill: false
-        },
-        {
-          label: 'Operating Point',
-          data: [{ x: 0, y: 0.5 }],
-          backgroundColor: tc.opPointBg,
-          borderColor: tc.opPointBorder,
-          borderWidth: 2,
-          pointRadius: 6,
-          pointHoverRadius: 8,
-          showLine: false
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 50,
-      scales: {
-        x: {
-          type: 'linear',
-          min: -5,
-          max: 5,
-          title: { display: true, text: 'Affine Sum z = wTx + b', color: tc.axisTitleColor },
-          grid: { color: tc.gridColor },
-          ticks: { color: tc.tickColor, stepSize: 1.0 }
-        },
-        y: {
-          min: -0.2,
-          max: 1.2,
-          title: { display: true, text: 'Output y = f(z)', color: tc.ch2Color },
-          grid: { color: tc.gridColor },
-          ticks: { color: tc.tickColor, stepSize: 0.2 }
-        }
-      },
-      plugins: {
-        legend: { labels: { color: tc.legendColor, boxWidth: 12 } }
-      }
-    }
-  });
-
-  const updateNeuron = () => {
-    const x = inputs.map(el => (el ? parseFloat(el.value) || 0 : 0));
-    const w = weights.map(el => (el ? parseFloat(el.value) || 0 : 0));
-    const b = biasInput ? parseFloat(biasInput.value) || 0 : 0;
-    const act = actSelect ? actSelect.value : 'sigmoid';
-
-    // Update slider readouts
-    ['x1', 'x2', 'x3'].forEach((id, i) => {
-      const disp = document.getElementById(`${id}-disp`);
-      if (disp) disp.textContent = x[i].toFixed(2);
-    });
-    ['w1', 'w2', 'w3'].forEach((id, i) => {
-      const disp = document.getElementById(`${id}-disp`);
-      if (disp) disp.textContent = w[i].toFixed(2);
-    });
-    const bDisp = document.getElementById('bias-disp');
-    if (bDisp) bDisp.textContent = b.toFixed(2);
-
-    const res = neuron(x, w, b, act);
-    const zEl = document.getElementById('neuron-z');
-    const yEl = document.getElementById('neuron-y');
-    if (zEl) zEl.textContent = res.z.toFixed(4);
-    if (yEl) yEl.textContent = res.y.toFixed(4);
-
-    if (actBadge && ACTIVATION_META[act]) {
-      actBadge.textContent = `${ACTIVATION_META[act].name}: ${ACTIVATION_META[act].description}`;
-    }
-
-    // Update activation curve data
-    const fn = ACTIVATIONS[act] || ACTIVATIONS.sigmoid;
-    const curve = zPoints.map(zv => ({ x: zv, y: fn(zv) }));
-
-    if (act === 'relu') {
-      neuronChartInstance.options.scales.y.max = 5.2;
-    } else {
-      neuronChartInstance.options.scales.y.max = 1.2;
-    }
-
-    neuronChartInstance.data.datasets[0].data = curve;
-    neuronChartInstance.data.datasets[1].data = [{ x: res.z, y: res.y }];
-    neuronChartInstance.update('none');
+  // Weights and bias that make one step-activation neuron behave like each gate
+  const PRESETS = {
+    AND:  { w: [1, 1],   b: -1.5 },
+    OR:   { w: [1, 1],   b: -0.5 },
+    NAND: { w: [-1, -1], b: 1.5 }
   };
 
-  [...inputs, ...weights, biasInput, actSelect].filter(Boolean).forEach(el => {
-    el.addEventListener('input', updateNeuron);
-    if (el.tagName === 'SELECT') {
-      el.addEventListener('change', updateNeuron);
+  const fmt = n => (n < 0 ? `−${Math.abs(n)}` : `${n}`);          // proper minus sign
+  const signed = n => (n < 0 ? `− ${Math.abs(n)}` : `+ ${n}`);
+
+  const render = () => {
+    const { a, b, gate } = state.perceptron;
+    const p = PRESETS[gate];
+    const res = neuron([a, b], p.w, p.b, 'step');
+
+    btnA.textContent = `${a}`;
+    btnA.className = `bit-toggle ${a ? 'on' : 'off'}`;
+    btnB.textContent = `${b}`;
+    btnB.className = `bit-toggle ${b ? 'on' : 'off'}`;
+
+    outEl.textContent = res.y;
+    if (outLabel) outLabel.textContent = res.y ? 'fires' : 'stays quiet';
+
+    if (weightsEl) {
+      weightsEl.innerHTML = `
+        <span class="neuron-chip">Weight A <strong>${fmt(p.w[0])}</strong></span>
+        <span class="neuron-chip">Weight B <strong>${fmt(p.w[1])}</strong></span>
+        <span class="neuron-chip">Bias <strong>${p.b > 0 ? '+' : ''}${fmt(p.b)}</strong></span>`;
     }
+
+    if (sumEl) {
+      sumEl.innerHTML = `Sum = (${fmt(p.w[0])} &times; ${a}) + (${fmt(p.w[1])} &times; ${b}) ${signed(p.b)}
+        = <strong>${fmt(Number(res.z.toFixed(2)))}</strong>
+        <span class="neuron-verdict">${res.z >= 0 ? '&ge; 0 → output 1' : '&lt; 0 → output 0'}</span>`;
+    }
+
+    if (truthEl) {
+      const rows = [[0, 0], [0, 1], [1, 0], [1, 1]].map(([ra, rb]) => {
+        const r = neuron([ra, rb], p.w, p.b, 'step');
+        return `<tr class="${ra === a && rb === b ? 'active-row' : ''}">
+            <td>${ra}</td><td>${rb}</td><td>${fmt(Number(r.z.toFixed(2)))}</td><td><strong>${r.y}</strong></td>
+          </tr>`;
+      }).join('');
+      truthEl.innerHTML = `
+        <table class="truth-table">
+          <thead><tr><th>A</th><th>B</th><th>Sum</th><th>Output</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      state.perceptron.gate = tab.getAttribute('data-ngate');
+      render();
+    });
   });
-  updateNeuron();
+  btnA.addEventListener('click', () => { state.perceptron.a ^= 1; render(); });
+  btnB.addEventListener('click', () => { state.perceptron.b ^= 1; render(); });
+  render();
 }
 
 /* ============================================================
@@ -1283,12 +1233,9 @@ function initNeuronModule() {
  * ============================================================ */
 function initLIFModule() {
   const rateSlider = document.getElementById('lif-rate');
-  const vthSlider = document.getElementById('lif-vth');
-  const modeSelect = document.getElementById('lif-mode');
   const rateDisp = document.getElementById('lif-rate-disp');
-  const vthDisp = document.getElementById('lif-vth-disp');
   const canvas = document.getElementById('lifChart');
-  if (!canvas) return;
+  if (!canvas || !rateSlider) return;
 
   const ctx = canvas.getContext('2d');
 
@@ -1299,7 +1246,7 @@ function initLIFModule() {
     data: {
       datasets: [
         {
-          label: 'Membrane Potential V(t) [V]',
+          label: 'Capacitor voltage V(t) [V]',
           data: [],
           borderColor: tc.ch2Color,
           backgroundColor: tc.ch2Fill,
@@ -1309,7 +1256,7 @@ function initLIFModule() {
           fill: true
         },
         {
-          label: 'Threshold Vth [V]',
+          label: 'Threshold (1 V)',
           data: [],
           borderColor: tc.refColor,
           borderWidth: 1.5,
@@ -1318,7 +1265,7 @@ function initLIFModule() {
           fill: false
         },
         {
-          label: 'Action Potential Spikes (δ)',
+          label: 'Spikes',
           data: [],
           backgroundColor: tc.ch1Color,
           borderColor: '#ffffff',
@@ -1350,7 +1297,7 @@ function initLIFModule() {
         y: {
           min: 0,
           max: 2.2,
-          title: { display: true, text: 'Membrane Potential (V)', color: tc.ch2Color },
+          title: { display: true, text: 'Voltage (V)', color: tc.ch2Color },
           grid: { color: tc.gridColor },
           ticks: { color: tc.tickColor, stepSize: 0.5 }
         }
@@ -1363,17 +1310,16 @@ function initLIFModule() {
 
   const updateLIF = () => {
     const rate = parseFloat(rateSlider.value);
-    const vth = parseFloat(vthSlider.value);
-    const mode = modeSelect.value;
+    const vth = state.lif.vth; // fixed 1 V threshold
+    state.lif.rate = rate;
+    if (rateDisp) rateDisp.textContent = `${rate} Hz`;
 
-    rateDisp.textContent = `${rate} Hz`;
-    vthDisp.textContent = `${vth.toFixed(2)} V`;
+    const res = lif(1e-6, 100e3, vth, rate, { mode: 'pulses' });
 
-    const res = lif(1e-6, 100e3, vth, rate, { mode });
-
-    document.getElementById('lif-tau').textContent = `${(res.tau * 1000).toFixed(0)} ms`;
-    document.getElementById('lif-spikes').textContent = res.spikes.length;
-    document.getElementById('lif-firing-rate').textContent = `${res.outputRate.toFixed(1)} Hz`;
+    const spikesEl = document.getElementById('lif-spikes');
+    const rateEl = document.getElementById('lif-firing-rate');
+    if (spikesEl) spikesEl.textContent = res.spikes.length;
+    if (rateEl) rateEl.textContent = `${res.outputRate.toFixed(0)}`;
 
     // Time in milliseconds (0 to 500 ms)
     lifChartInstance.data.datasets[0].data = res.t.map((ti, idx) => ({
@@ -1397,8 +1343,6 @@ function initLIFModule() {
   };
 
   rateSlider.addEventListener('input', updateLIF);
-  vthSlider.addEventListener('input', updateLIF);
-  modeSelect.addEventListener('change', updateLIF);
   updateLIF();
 }
 

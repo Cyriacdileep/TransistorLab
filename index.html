@@ -490,109 +490,77 @@
       <div class="section-intro-block">
         <div class="section-badge-row">
           <span class="module-badge">Module 03</span>
-          <h2>Neural: Artificial vs. Spiking Neurons</h2>
+          <h2>Neural: Two Simple Neuron Models</h2>
         </div>
         <p class="section-intro-text">
-          Artificial neural networks evaluate deterministic algebraic transformations through static activation functions, whereas biological neurons integrate temporal charge across a leaky RC lipid bilayer and emit discrete action potentials.
+          A real neuron collects signals and fires once enough arrive. Here are two simplified models of that idea: the artificial neuron used in AI, and a spiking neuron built from a resistor and a capacitor. They are teaching models, not biology.
         </p>
       </div>
 
-      <!-- 3.1 Artificial Perceptron -->
+      <!-- 3.1 A Neuron as a Logic Gate -->
       <div class="submodule-block">
         <div class="submodule-intro">
-          <h3>3.1 Artificial Perceptron: Dot Product &amp; Activation Curve</h3>
+          <h3>3.1 A Neuron as a Logic Gate</h3>
           <p>
-            Computes an affine transformation z = w<sup>T</sup>x + b and projects through an activation function (Sigmoid, Step, or ReLU). Adjust inputs and weights with sliders to observe the real-time operating point on the activation response curve.
+            An artificial neuron (perceptron) multiplies each input by a weight, adds a bias, and outputs 1 if the total is 0 or more. Pick a gate to load a different set of weights, then flip the inputs: the same neuron follows that gate's truth table. In AI, &ldquo;training&rdquo; means finding these numbers automatically.
           </p>
         </div>
 
         <div class="instrument-panel">
-          <div class="perceptron-layout">
-            <div class="neuron-inputs">
-              <div class="weight-row">
-                <div class="control-group">
-                  <label for="x1"><span class="label-title">Input x<sub>1</sub>:</span> <strong id="x1-disp">1.00</strong></label>
-                  <input type="range" id="x1" min="-2.0" max="2.0" step="0.1" value="1.0" aria-label="Input x1">
-                </div>
-                <div class="control-group">
-                  <label for="w1"><span class="label-title">Weight w<sub>1</sub>:</span> <strong id="w1-disp">0.80</strong></label>
-                  <input type="range" id="w1" min="-2.0" max="2.0" step="0.1" value="0.8" aria-label="Weight w1">
-                </div>
-              </div>
-
-              <div class="weight-row">
-                <div class="control-group">
-                  <label for="x2"><span class="label-title">Input x<sub>2</sub>:</span> <strong id="x2-disp">0.50</strong></label>
-                  <input type="range" id="x2" min="-2.0" max="2.0" step="0.1" value="0.5" aria-label="Input x2">
-                </div>
-                <div class="control-group">
-                  <label for="w2"><span class="label-title">Weight w<sub>2</sub>:</span> <strong id="w2-disp">-0.50</strong></label>
-                  <input type="range" id="w2" min="-2.0" max="2.0" step="0.1" value="-0.5" aria-label="Weight w2">
-                </div>
-              </div>
-
-              <div class="weight-row">
-                <div class="control-group">
-                  <label for="x3"><span class="label-title">Input x<sub>3</sub>:</span> <strong id="x3-disp">0.20</strong></label>
-                  <input type="range" id="x3" min="-2.0" max="2.0" step="0.1" value="0.2" aria-label="Input x3">
-                </div>
-                <div class="control-group">
-                  <label for="w3"><span class="label-title">Weight w<sub>3</sub>:</span> <strong id="w3-disp">1.20</strong></label>
-                  <input type="range" id="w3" min="-2.0" max="2.0" step="0.1" value="1.2" aria-label="Weight w3">
-                </div>
-              </div>
-
-              <div class="control-group">
-                <label for="bias"><span class="label-title">Bias b:</span> <strong id="bias-disp">-0.30</strong></label>
-                <input type="range" id="bias" min="-2.0" max="2.0" step="0.1" value="-0.3" aria-label="Bias b">
-              </div>
-
-              <div class="control-group">
-                <label for="activation-select">Activation Function f(z):</label>
-                <select id="activation-select" class="select-input">
-                  <option value="sigmoid" selected>Sigmoid &sigma;(z) = 1 / (1 + e⁻ᶻ)</option>
-                  <option value="step">Heaviside Step H(z)</option>
-                  <option value="relu">Rectified Linear Unit (ReLU)</option>
-                </select>
-              </div>
-
-              <div id="activation-description-badge" class="act-badge-desc">
-                Sigmoid Function: Maps inputs onto continuous open interval (0, 1), modeling normalized activation rates.
-              </div>
-            </div>
-
-            <!-- Activation Function Response Plot -->
-            <div class="chart-wrapper">
-              <div class="chart-mini-header">
-                <span class="chart-tag output-tag">CH2: Activation Curve f(z)</span>
-                <span class="chart-subtag">Operating Point at current z</span>
-              </div>
-              <div class="chart-canvas-container">
-                <canvas id="neuronChart" aria-label="Neuron Activation Function Response"></canvas>
-              </div>
+          <div class="gate-selector-bar">
+            <label>Make the neuron act like:</label>
+            <div class="btn-group" id="neuron-gate-tabs">
+              <button type="button" class="tab-btn" data-ngate="AND">AND</button>
+              <button type="button" class="tab-btn" data-ngate="OR">OR</button>
+              <button type="button" class="tab-btn active" data-ngate="NAND">NAND</button>
             </div>
           </div>
 
-          <!-- Digital Readouts Beneath -->
-          <div class="readout-box">
-            <div class="readout-item">
-              <span class="label">Affine Sum (z = w<sup>T</sup>x + b):</span>
-              <span id="neuron-z" class="val">0.0000</span>
+          <div class="gate-interactive-workbench">
+            <div class="gate-controls">
+              <div class="input-toggles">
+                <div class="toggle-control">
+                  <label for="neuron-a">Input A:</label>
+                  <button type="button" id="neuron-a" class="bit-toggle off">0</button>
+                </div>
+                <div class="toggle-control">
+                  <label for="neuron-b">Input B:</label>
+                  <button type="button" id="neuron-b" class="bit-toggle off">0</button>
+                </div>
+              </div>
+
+              <div class="gate-result-box">
+                <span class="gate-formula">Neuron output</span>
+                <div class="output-display">
+                  <span class="out-bit" id="neuron-out">1</span>
+                  <span class="out-voltage" id="neuron-out-label">fires</span>
+                </div>
+              </div>
             </div>
-            <div class="readout-item">
-              <span class="label">Activation Output (y = f(z)):</span>
-              <span id="neuron-y" class="val">0.0000</span>
+
+            <div class="neuron-math-viewport">
+              <div class="neuron-weights" id="neuron-weights">
+                <!-- weight chips rendered by app.js -->
+              </div>
+              <div class="neuron-sum" id="neuron-sum" aria-live="polite">
+                <!-- worked sum rendered by app.js -->
+              </div>
+              <p class="neuron-rule">Rule: sum &ge; 0 &rarr; output 1, otherwise output 0.</p>
+              <div class="truth-table-box">
+                <h4>Truth table for this neuron</h4>
+                <div id="neuron-truth-table"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 3.2 Biophysical Leaky Integrate-and-Fire (LIF) Dynamics -->
+      <!-- 3.2 Spiking Neuron (Leaky Integrate-and-Fire) -->
       <div class="submodule-block">
         <div class="submodule-intro">
-          <h3>3.2 Biophysical Leaky Integrate-and-Fire Dynamics</h3>
+          <h3>3.2 Spiking Neuron (Leaky Integrate-and-Fire)</h3>
           <p>
-            An equivalent RC circuit (C = 1 &mu;F, R = 100 k&Omega;, &tau; = 100 ms) integrates input stimulation current. When membrane potential reaches threshold V<sub>th</sub>, an action potential spike is emitted and potential resets to zero.
+            Think of a leaky bucket. Each input pulse adds charge to a capacitor (C = 1 &mu;F), and a resistor (R = 100 k&Omega;) slowly leaks it away. When the voltage reaches 1 V, the neuron fires a spike and resets to 0 V. Unlike the perceptron, timing matters: drag the pulse rate up and the charge builds faster than it leaks, so the neuron fires more often.
           </p>
         </div>
 
@@ -606,31 +574,16 @@
                 </label>
                 <input type="range" id="lif-rate" min="10" max="100" step="5" value="50" aria-label="Input Pulse Rate">
               </div>
-
-              <div class="control-group">
-                <label for="lif-vth">
-                  <span class="label-title">Spike Threshold (V<sub>th</sub>):</span>
-                  <strong id="lif-vth-disp">1.00 V</strong>
-                </label>
-                <input type="range" id="lif-vth" min="0.5" max="2.0" step="0.1" value="1.00" aria-label="Spike Threshold Vth">
-              </div>
-
-              <div class="control-group">
-                <label for="lif-mode">Stimulation Mode:</label>
-                <select id="lif-mode" class="select-input">
-                  <option value="pulses" selected>Periodic Current Pulses (100 µA)</option>
-                  <option value="constant">Constant DC Current (20 µA)</option>
-                </select>
-              </div>
+              <p class="neuron-rule">Each pulse: 100 &micro;A for 5 ms. Threshold: 1 V.</p>
             </div>
 
             <div class="chart-wrapper">
               <div class="chart-mini-header">
-                <span class="chart-tag output-tag">CH2: Membrane Potential V(t) [V]</span>
+                <span class="chart-tag output-tag">CH2: Capacitor Voltage V(t) [V]</span>
                 <span class="chart-subtag">Time: 0 to 500 ms &bull; Spikes marked at threshold</span>
               </div>
               <div class="chart-canvas-container">
-                <canvas id="lifChart" aria-label="LIF Membrane Potential Waveform Plot"></canvas>
+                <canvas id="lifChart" aria-label="Capacitor voltage over time, with spikes at the threshold"></canvas>
               </div>
             </div>
           </div>
@@ -638,16 +591,12 @@
           <!-- Digital Readouts Beneath -->
           <div class="readout-box">
             <div class="readout-item">
-              <span class="label">Membrane Time Constant (&tau; = RC):</span>
-              <span id="lif-tau" class="val">100 ms</span>
-            </div>
-            <div class="readout-item">
-              <span class="label">Spike Count:</span>
+              <span class="label">Spikes in 0.5 s:</span>
               <span id="lif-spikes" class="val">--</span>
             </div>
             <div class="readout-item">
-              <span class="label">Firing Frequency:</span>
-              <span id="lif-firing-rate" class="val">-- Hz</span>
+              <span class="label">Spikes per second:</span>
+              <span id="lif-firing-rate" class="val">--</span>
             </div>
           </div>
         </div>
@@ -708,7 +657,7 @@
                 <td><span class="badge-status match">Match</span></td>
               </tr>
               <tr>
-                <td><strong>LIF Constant Firing Period</strong></td>
+                <td><strong>Spiking Neuron Firing Period</strong></td>
                 <td>69.31 ms formula (T = RC &middot; ln[IR / (IR &minus; V<sub>th</sub>)])</td>
                 <td>69.30 ms sim</td>
                 <td>n/a</td>

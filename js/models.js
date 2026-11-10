@@ -304,24 +304,24 @@ export const ACTIVATIONS = {
 export const ACTIVATION_META = {
   step: {
     id: 'step',
-    name: 'Step Function (Heaviside)',
+    name: 'Step',
     formula: 'H(z) = 1 (if z ≥ 0), 0 (if z < 0)',
     displayFormula: 'H(z) = 1 (z ≥ 0), 0 (z < 0)',
-    description: 'Implements a discrete Heaviside threshold, modeling ideal binary firing behavior.'
+    description: 'outputs 1 if z ≥ 0, otherwise 0. A hard yes/no, like a logic gate.'
   },
   sigmoid: {
     id: 'sigmoid',
-    name: 'Sigmoid Function σ(z)',
+    name: 'Sigmoid',
     formula: 'σ(z) = 1 / (1 + e^-z)',
     displayFormula: 'σ(z) = 1 / (1 + e^-z)',
-    description: 'Maps inputs onto a continuous open interval (0, 1), modeling normalized activation rates.'
+    description: 'a smooth S-curve from 0 to 1. At z = 0 the output is exactly 0.5.'
   },
   relu: {
     id: 'relu',
-    name: 'Rectified Linear Unit (ReLU)',
+    name: 'ReLU',
     formula: 'f(z) = max(0, z)',
     displayFormula: 'f(z) = max(0, z)',
-    description: 'Continuous non-linear activation passing positive excitations with zero sub-threshold response.'
+    description: 'outputs 0 for negative z, otherwise z itself.'
   }
 };
 
