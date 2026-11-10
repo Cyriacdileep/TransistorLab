@@ -78,6 +78,7 @@ function initApp() {
   initNeuronModule();
   initLIFModule();
   initLightboxModal();
+  initScrollEffects();
 }
 
 /* ============================================================
@@ -281,9 +282,189 @@ function initThemeAndNav() {
         });
       }
     });
+
+    // The last section is too short to reach the top, so highlight it at the page bottom
+    const atPageBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    if (atPageBottom && navLinks.length) {
+      navLinks.forEach((link, i) => link.classList.toggle('active', i === navLinks.length - 1));
+    }
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
+}
+
+/* ============================================================
+ * Scroll Effects: growing titles + side section rail
+ * ============================================================ */
+function initScrollEffects() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const wideEnough = window.matchMedia('(min-width: 700px)');
+  const navbarHeight = () => {
+    const nav = document.querySelector('.navbar');
+    return nav ? nav.offsetHeight : 60;
+  };
+
+  /* ---- 1. Titles grow as they reach the reading line, shrink as they leave ---- */
+  const titles = Array.from(document.querySelectorAll(
+    '.section-intro-block h2, .submodule-intro h3'
+  ));
+  titles.forEach(t => t.classList.add('scroll-title'));
+
+  const MAX_GROW = { H2: 0.16, H3: 0.12 }; // +16% / +12% at the reading line
+
+  const updateTitles = () => {
+    if (reduceMotion.matches || !wideEnough.matches) {
+      titles.forEach(t => {
+        t.style.setProperty('--title-scale', '1');
+        t.classList.remove('title-in-focus');
+      });
+      return;
+    }
+    const top = navbarHeight();
+    const readingLine = top + (window.innerHeight - top) * 0.3; // 30% down the visible area
+    const range = window.innerHeight * 0.35;
+    titles.forEach(t => {
+      const r = t.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - readingLine);
+      let k = Math.max(0, 1 - d / range);
+      k = k * k * (3 - 2 * k); // smoothstep, so it eases in and out
+      t.style.setProperty('--title-scale', (1 + (MAX_GROW[t.tagName] || 0.1) * k).toFixed(3));
+      t.classList.toggle('title-in-focus', k > 0.6);
+    });
+  };
+
+  /* ---- 2. Side rail: one stop per section, fill shows progress, click or drag to jump ---- */
+  const navLinks = Array.from(document.querySelectorAll('#main-nav a'));
+  const stops = navLinks
+    .map(a => ({ id: a.getAttribute('href').slice(1), label: a.textContent.trim() }))
+    .filter(s => document.getElementById(s.id));
+
+  const rail = document.createElement('nav');
+  rail.className = 'section-rail';
+  rail.setAttribute('aria-label', 'Jump to section');
+  rail.innerHTML = `
+    <div class="rail-track" aria-hidden="true"><div class="rail-fill"></div></div>
+    <ol class="rail-stops">
+      ${stops.map(s => `
+        <li>
+          <a class="rail-stop" href="#${s.id}" data-target="${s.id}" draggable="false">
+            <span class="rail-label">${s.label}</span>
+            <span class="rail-dot" aria-hidden="true"></span>
+          </a>
+        </li>`).join('')}
+    </ol>`;
+  document.body.appendChild(rail);
+
+  const track = rail.querySelector('.rail-track');
+  const fill = rail.querySelector('.rail-fill');
+  const stopEls = Array.from(rail.querySelectorAll('.rail-stop'));
+  const offset = () => navbarHeight() + 12;
+  const sectionTops = () => stops.map(s =>
+    document.getElementById(s.id).getBoundingClientRect().top + window.scrollY - offset()
+  );
+  const atBottom = () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+
+  // Scroll position -> rail fraction (0..1), piecewise so each dot lines up with its section
+  const currentFraction = () => {
+    const tops = sectionTops();
+    const n = tops.length;
+    if (n < 2) return 0;
+    if (atBottom()) return 1;
+    const y = window.scrollY + 1;
+    if (y <= tops[0]) return 0;
+    for (let i = 0; i < n - 1; i++) {
+      if (y < tops[i + 1]) return (i + (y - tops[i]) / (tops[i + 1] - tops[i])) / (n - 1);
+    }
+    return 1;
+  };
+
+  // Rail fraction -> page scroll position (inverse of the above)
+  const scrollForFraction = f => {
+    const tops = sectionTops();
+    const n = tops.length;
+    const x = Math.min(Math.max(f, 0), 1) * (n - 1);
+    const i = Math.min(Math.floor(x), n - 2);
+    return tops[i] + (x - i) * (tops[i + 1] - tops[i]);
+  };
+
+  const updateRail = () => {
+    const f = currentFraction();
+    fill.style.height = `${(f * 100).toFixed(2)}%`;
+    // Same rule as the top menu: the last section whose top has passed just below the navbar
+    const probe = window.scrollY + navbarHeight() + 40;
+    let active = 0;
+    stops.forEach((s, i) => {
+      const el = document.getElementById(s.id);
+      if (el.getBoundingClientRect().top + window.scrollY <= probe) active = i;
+    });
+    if (atBottom()) active = stops.length - 1;
+    stopEls.forEach((el, i) => {
+      el.classList.toggle('active', i === active);
+      if (i === active) el.setAttribute('aria-current', 'true');
+      else el.removeAttribute('aria-current');
+    });
+  };
+
+  let suppressClick = false; // set when a drag ends on a dot, so it doesn't also jump
+  stopEls.forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      if (suppressClick) { suppressClick = false; return; }
+      const target = document.getElementById(el.dataset.target);
+      if (!target) return;
+      window.scrollTo({
+        top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset()),
+        behavior: reduceMotion.matches ? 'auto' : 'smooth'
+      });
+      history.pushState(null, '', `#${el.dataset.target}`);
+    });
+  });
+
+  // Click or drag along the track to scrub through the page
+  const stopsList = rail.querySelector('.rail-stops');
+  const fractionFromPointer = e => {
+    const r = track.getBoundingClientRect();
+    return (e.clientY - r.top) / r.height;
+  };
+  // 'instant' overrides the page's CSS smooth scrolling so the page follows the pointer
+  const scrub = e => window.scrollTo({ top: Math.max(0, scrollForFraction(fractionFromPointer(e))), behavior: 'instant' });
+  rail.addEventListener('dragstart', e => e.preventDefault()); // stop the browser dragging the link itself
+  let pressed = false, dragging = false, startY = 0, onDot = false;
+  stopsList.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    pressed = true; dragging = false; startY = e.clientY;
+    onDot = !!e.target.closest('.rail-stop');
+  });
+  stopsList.addEventListener('pointermove', e => {
+    if (!pressed) return;
+    if (!dragging && Math.abs(e.clientY - startY) > 4) {
+      dragging = true;
+      rail.classList.add('dragging');
+      stopsList.setPointerCapture(e.pointerId);
+    }
+    if (dragging) scrub(e);
+  });
+  const endDrag = e => {
+    if (pressed && !dragging && !onDot && e.type === 'pointerup') scrub(e); // plain click on the track
+    if (dragging && onDot) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0); // only swallow the click that ends this drag
+    }
+    pressed = false; dragging = false;
+    rail.classList.remove('dragging');
+  };
+  stopsList.addEventListener('pointerup', endDrag);
+  stopsList.addEventListener('pointercancel', endDrag);
+
+  /* ---- shared scroll loop ---- */
+  let ticking = false;
+  const onFrame = () => { ticking = false; updateTitles(); updateRail(); };
+  const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(onFrame); } };
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request);
+  reduceMotion.addEventListener?.('change', request);
+  wideEnough.addEventListener?.('change', request);
+  onFrame();
 }
 
 /* ============================================================
@@ -1428,5 +1609,6 @@ export {
   initAmpModule,
   initNeuronModule,
   initLIFModule,
-  initLightboxModal
+  initLightboxModal,
+  initScrollEffects
 };
