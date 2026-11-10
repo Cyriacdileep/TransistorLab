@@ -50,6 +50,7 @@ ANALOG/
 ├── assets/
 │   ├── favicon.ico                   # Site favicon
 │   ├── favicon.png                   # Application branding logo
+│   ├── 2n3904-transistor.jpg         # Discrete TO-92 NPN BJT hardware component
 │   ├── bjt-inverter-schematic.jpeg   # LTspice BJT inverter schematic
 │   ├── bjt-vtc-simulation.jpeg       # LTspice BJT VTC transfer curve
 │   ├── ce-amplifier-schematic.jpeg   # LTspice CE amplifier schematic
