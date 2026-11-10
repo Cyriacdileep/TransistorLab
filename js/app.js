@@ -1166,13 +1166,49 @@ function initNeuronModule() {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  // Build activation curve [-5, 5]
-  const zPoints = [];
-  for (let z = -5; z <= 5; z += 0.2) {
-    zPoints.push(parseFloat(z.toFixed(2)));
-  }
+  let currentZ = 0;
+  let isSaturated = false;
+
+  const saturationArrowPlugin = {
+    id: 'saturationArrow',
+    afterDatasetsDraw(chart) {
+      if (!isSaturated) return;
+      const meta = chart.getDatasetMeta(1);
+      if (!meta || !meta.data || !meta.data[0]) return;
+      const pt = meta.data[0];
+      const { ctx: c, chartArea } = chart;
+      if (!c || !chartArea) return;
+
+      c.save();
+      c.fillStyle = '#f59e0b';
+      c.font = '600 11px "Ubuntu Mono", monospace, sans-serif';
+      c.textBaseline = 'middle';
+
+      if (currentZ > 5) {
+        c.textAlign = 'right';
+        const label = `z = ${currentZ.toFixed(2)} \u2192`;
+        const xPos = Math.max(chartArea.left + 60, pt.x - 12);
+        c.fillText(label, xPos, pt.y);
+      } else if (currentZ < -5) {
+        c.textAlign = 'left';
+        const label = `\u2190 z = ${currentZ.toFixed(2)}`;
+        const xPos = Math.min(chartArea.right - 60, pt.x + 12);
+        c.fillText(label, xPos, pt.y);
+      }
+      c.restore();
+    }
+  };
 
   const tc = getThemeColors();
+
+  // Tick formatter ensuring zero prints as '0' and never '-0.0' or '-0'
+  const cleanTickFormatter = (v) => {
+    const val = Number(v);
+    if (Math.abs(val) < 1e-6 || Object.is(val, -0) || Object.is(val, -0.0)) {
+      return '0';
+    }
+    return (val % 1 === 0) ? String(val) : val.toFixed(1);
+  };
 
   neuronChartInstance = new Chart(ctx, {
     type: 'line',
@@ -1210,20 +1246,29 @@ function initNeuronModule() {
           max: 5,
           title: { display: true, text: 'Affine Sum z = wTx + b', color: tc.axisTitleColor },
           grid: { color: tc.gridColor },
-          ticks: { color: tc.tickColor, stepSize: 1.0 }
+          ticks: {
+            color: tc.tickColor,
+            stepSize: 1.0,
+            callback: cleanTickFormatter
+          }
         },
         y: {
           min: -0.2,
           max: 1.2,
           title: { display: true, text: 'Output y = f(z)', color: tc.ch2Color },
           grid: { color: tc.gridColor },
-          ticks: { color: tc.tickColor, stepSize: 0.2 }
+          ticks: {
+            color: tc.tickColor,
+            stepSize: 0.2,
+            callback: cleanTickFormatter
+          }
         }
       },
       plugins: {
         legend: { labels: { color: tc.legendColor, boxWidth: 12 } }
       }
-    }
+    },
+    plugins: [saturationArrowPlugin]
   });
 
   const updateNeuron = () => {
@@ -1254,14 +1299,33 @@ function initNeuronModule() {
       actBadge.textContent = `${ACTIVATION_META[act].name}: ${ACTIVATION_META[act].description}`;
     }
 
-    // Update activation curve data
+    // Dynamic x-axis widening: if z is outside [-5, 5], widen x-axis so operating point is fully visible
+    const baseMin = -5;
+    const baseMax = 5;
+    const xMin = Math.min(baseMin, Math.floor(res.z - 1));
+    const xMax = Math.max(baseMax, Math.ceil(res.z + 1));
+
+    currentZ = res.z;
+    isSaturated = (res.z > baseMax || res.z < baseMin);
+
+    neuronChartInstance.options.scales.x.min = xMin;
+    neuronChartInstance.options.scales.x.max = xMax;
+    neuronChartInstance.options.scales.x.ticks.stepSize = (xMax - xMin) > 12 ? 2.0 : 1.0;
+
+    // Dynamically sample activation curve across full [xMin, xMax]
     const fn = ACTIVATIONS[act] || ACTIVATIONS.sigmoid;
-    const curve = zPoints.map(zv => ({ x: zv, y: fn(zv) }));
+    const step = Math.max(0.1, (xMax - xMin) / 100);
+    const curve = [];
+    for (let zv = xMin; zv <= xMax + 1e-5; zv += step) {
+      curve.push({ x: parseFloat(zv.toFixed(2)), y: fn(zv) });
+    }
 
     if (act === 'relu') {
-      neuronChartInstance.options.scales.y.max = 5.2;
+      neuronChartInstance.options.scales.y.max = Math.max(5.2, Math.ceil(res.y + 1));
+      neuronChartInstance.options.scales.y.ticks.stepSize = 1.0;
     } else {
       neuronChartInstance.options.scales.y.max = 1.2;
+      neuronChartInstance.options.scales.y.ticks.stepSize = 0.2;
     }
 
     neuronChartInstance.data.datasets[0].data = curve;
