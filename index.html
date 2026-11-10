@@ -42,14 +42,27 @@
   <main class="container">
     <!-- Hero / Architecture Foundation Section -->
     <section id="overview" class="hero-section">
-      <div class="hero-header">
-        <h1>TransistorLab: From Silicon to Intelligence</h1>
-        <p class="hero-thesis">
-          "Transistors switch, gates compute, adders do arithmetic; the same transistor amplifies and can mimic a neuron"
-        </p>
-        <p class="hero-body">
-          Computing hardware arises from solid-state semiconductor physics. By modulating base-emitter carrier injection in a single bipolar junction transistor (BJT), we construct elementary logic gates that cascade into multi-bit binary adders. Biased in its active region, that identical physical junction operates as a small-signal analog amplifier or emulates leaky integrate-and-fire neuro-electrodynamics.
-        </p>
+      <div class="hero-main-row">
+        <div class="hero-header">
+          <h1>TransistorLab: From Silicon to Intelligence</h1>
+          <p class="hero-thesis">
+            "Transistors switch, gates compute, adders do arithmetic; the same transistor amplifies and can mimic a neuron"
+          </p>
+          <p class="hero-body">
+            Computing hardware arises from solid-state semiconductor physics. By modulating base-emitter carrier injection in a single bipolar junction transistor (BJT), we construct elementary logic gates that cascade into multi-bit binary adders. Biased in its active region, that identical physical junction operates as a small-signal analog amplifier or emulates leaky integrate-and-fire neuro-electrodynamics.
+          </p>
+        </div>
+
+        <div class="hero-transistor-card gallery-card" data-lightbox="assets/2n3904-transistor.jpg" data-caption="Discrete NPN BJT in TO-92 Package (2N3904): Physical 3-terminal silicon semiconductor component underpinning discrete switching logic and small-signal amplification. Pinout: Emitter (1), Base (2), Collector (3).">
+          <div class="gallery-img-container">
+            <img src="assets/2n3904-transistor.jpg" alt="Discrete TO-92 NPN BJT Transistor (2N3904)" class="gallery-thumb">
+            <span class="gallery-zoom-badge">🔍 Zoom Component</span>
+          </div>
+          <div class="gallery-info">
+            <strong>Physical Hardware: TO-92 NPN BJT (2N3904)</strong>
+            <span>Discrete silicon semiconductor &bull; 3-terminal TO-92 package (E-B-C)</span>
+          </div>
+        </div>
       </div>
 
       <!-- Architectural Pathway Diagram -->
@@ -156,21 +169,10 @@
           </div>
         </div>
 
-        <!-- Hardware Component & LTspice Simulation Bench Verification -->
+        <!-- LTspice Simulation & Bench Verification -->
         <div class="asset-showcase-section">
-          <h4 class="showcase-title">Hardware Component &amp; LTspice Bench Verification</h4>
+          <h4 class="showcase-title">LTspice Bench Verification</h4>
           <div class="asset-gallery-grid">
-            <div class="gallery-card" data-lightbox="assets/2n3904-transistor.jpg" data-caption="Discrete NPN BJT in TO-92 Package (2N3904): Physical 3-terminal silicon semiconductor component underpinning discrete switching logic and small-signal amplification. Pinout: Emitter (1), Base (2), Collector (3).">
-              <div class="gallery-img-container">
-                <img src="assets/2n3904-transistor.jpg" alt="Discrete TO-92 NPN BJT Transistor (2N3904)" class="gallery-thumb">
-                <span class="gallery-zoom-badge">🔍 Zoom Component</span>
-              </div>
-              <div class="gallery-info">
-                <strong>Physical Hardware: TO-92 NPN BJT (2N3904)</strong>
-                <span>Discrete silicon semiconductor &bull; 3-terminal TO-92 package (E-B-C)</span>
-              </div>
-            </div>
-
             <div class="gallery-card" data-lightbox="assets/bjt-inverter-schematic.jpeg" data-caption="LTspice Schematic: BJT Inverter Switch with BC547B NPN transistor, collector pull-up resistor Rc=1kΩ to Vcc=5V, and base current limiting resistor Rb=10kΩ.">
               <div class="gallery-img-container">
                 <img src="assets/bjt-inverter-schematic.jpeg" alt="LTspice BJT Inverter Schematic" class="gallery-thumb">

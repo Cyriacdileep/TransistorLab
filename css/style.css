@@ -442,10 +442,48 @@ button, input, select {
   border-bottom: 1px solid var(--border-rule);
 }
 
+.hero-main-row {
+  display: grid;
+  grid-template-columns: 1fr 270px;
+  gap: 2.25rem;
+  align-items: center;
+}
+
 .hero-header {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+.hero-transistor-card {
+  width: 100%;
+  max-width: 270px;
+  justify-self: end;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.hero-transistor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+}
+
+.hero-transistor-card .gallery-img-container {
+  aspect-ratio: 4 / 3;
+  background-color: #ffffff;
+  padding: 0.4rem;
+}
+
+@media (max-width: 860px) {
+  .hero-main-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .hero-transistor-card {
+    max-width: 270px;
+    justify-self: start;
+  }
 }
 
 .hero-header h1 {
